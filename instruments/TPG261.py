@@ -10,30 +10,23 @@ ADRESS = "/dev/ttyS0"
 #==============================================================================
 
 class TPG261(abstract_instrument):
-    def __init__(self, adress=ADRESS, vtype=[ALL_VAL_TYPE[0]], channels = [ALL_CHANNELS[0]]):
+    def __init__(self, channels, vtypes, adress):
         self.adress = adress
-        self.vtype = vtype
+        self.channels = channels
+        self.vtypes = vtypes
 
     def model(self):
         return "PfeifferTPG261"
 
     def connect(self):
-        try:
-            print('Connecting to device @%s...' %(self.adress))
-            self.TPG = MaxiGauge(self.adress)
-            print('  --> Ok')
+        print('Connecting to device @%s...' %(self.adress))
+        self.TPG = MaxiGauge(self.adress)
+        print('  --> Ok')
+        print(self.model())
+        self.configure()
 
-            print(self.model())
-
-            if self.vtype == "PRE":
-                1
-            else:
-                print("Wrong -v argument")
-                raise
-
-        except Exception as er:
-            print("Unexpected error during connection: " + str(er))
-            raise
+    def configure(self):
+	pass
 
     def getValue(self):
 	self.read()

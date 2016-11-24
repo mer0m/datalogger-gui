@@ -68,7 +68,7 @@ class T7Pro(abstract_instrument):
         for ch in self.channels:
             raw = self.read(CONF_CHANNELS[ALL_CHANNELS.index(ch)])
             strMes = strMes + str(100.*raw[0]/raw[1]) + ';'
-        strMes = strMes[0:-1]
+        strMes = strMes[0:-1] + '\n'
         return(strMes)
 
     def read(self, names):

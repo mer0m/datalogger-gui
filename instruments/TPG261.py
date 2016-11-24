@@ -26,14 +26,14 @@ class TPG261(abstract_instrument):
         self.configure()
 
     def configure(self):
-	pass
+        pass
 
     def getValue(self):
-	self.read()
+        self.read()
         return "%s\n"%self.ps[0].pressure
 
     def read(self):
-	self.ps = self.TPG.pressures()
+        self.ps = self.TPG.pressures()
 
     def disconnect(self):
         self.TPG.disconnect()

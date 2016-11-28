@@ -200,6 +200,7 @@ class mainGui():
         self.startButton.setEnabled(False)
         self.stopButton.setEnabled(True)
         self.adress.setEnabled(False)
+        self.comboInst.setEnabled(False)
         for i in self.checkBoxChannels:
             i.setEnabled(False)
         self.myLog.connect()
@@ -210,6 +211,7 @@ class mainGui():
         self.startButton.setEnabled(True)
         self.stopButton.setEnabled(False)
         self.adress.setEnabled(False)
+        self.comboInst.setEnabled(True)
         for i in self.checkBoxChannels:
             i.setEnabled(True)
         self.myLog.stop()

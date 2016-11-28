@@ -212,9 +212,8 @@ class mainGui():
         self.stopButton.setEnabled(False)
         self.adress.setEnabled(True)
         self.comboInst.setEnabled(True)
-        for i in self.checkBoxChannels:
-            i.setEnabled(True)
         self.myLog.stop()
+        self.infoSignal()
 
 #==============================================================================
 #==============================================================================

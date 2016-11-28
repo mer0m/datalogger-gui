@@ -199,6 +199,9 @@ class mainGui():
     def startLog(self):
         self.startButton.setEnabled(False)
         self.stopButton.setEnabled(True)
+        self.adress.setEnabled(False)
+        for i in self.checkBoxChannels:
+            i.setEnabled(False)
         self.myLog.connect()
         self.myLog.start()
 
@@ -206,6 +209,9 @@ class mainGui():
     def stopLog(self):
         self.startButton.setEnabled(True)
         self.stopButton.setEnabled(False)
+        self.adress.setEnabled(False)
+        for i in self.checkBoxChannels:
+            i.setEnabled(True)
         self.myLog.stop()
 
 #==============================================================================

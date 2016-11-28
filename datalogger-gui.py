@@ -162,7 +162,6 @@ class mainGui():
             self.layout.addWidget(self.chListVtypes[i], i, 2)
             self.checkBoxChannels[i].stateChanged.connect(self.infoSignal)
             self.chListVtypes[i].currentItemChanged.connect(self.infoSignal)
-            self.chListVtypes[i].setEnabled(False)
 
         self.adress.textChanged.connect(self.infoSignal)
 
@@ -203,6 +202,8 @@ class mainGui():
         self.comboInst.setEnabled(False)
         for i in self.checkBoxChannels:
             i.setEnabled(False)
+        for i in self.chListVtypes:
+            i.setEnabled(False)
         self.myLog.connect()
         self.myLog.start()
 
@@ -212,8 +213,14 @@ class mainGui():
         self.stopButton.setEnabled(False)
         self.adress.setEnabled(True)
         self.comboInst.setEnabled(True)
+        for i in range(len(self.checkBoxChannels)):
+            if self.checkBoxChannels[i].isChecked():
+                self.checkBoxChannels[i].setEnabled(True)
+                self.chListVtypes[i].setEnabled(True)
+            else:
+                self.checkBoxChannels[i].setEnabled(True)
+                self.chListVtypes[i].setEnabled(False)
         self.myLog.stop()
-        self.infoSignal()
 
 #==============================================================================
 #==============================================================================

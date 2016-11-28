@@ -104,7 +104,7 @@ class mainGui():
         self.startButton = QtGui.QPushButton()
         self.startButton.setText('Start log')
         self.layout.addWidget(self.startButton, 99, 1)
-        self.startButton.setEnabled(True)
+        self.startButton.setEnabled(False)
 
         self.stopButton = QtGui.QPushButton()
         self.stopButton.setText('Stop log')
@@ -182,6 +182,14 @@ class mainGui():
                 self.vTypeToLog.append(str(self.chListVtypes[i].currentItem().text()))
             else:
                 self.chListVtypes[i].setEnabled(False)
+
+        allChannelsUnchecked = False
+        for i in self.checkBoxChannels:
+            allChannelsUnchecked = allChannelsUnchecked or i.isChecked()
+        if allChannelsUnchecked == False:
+            self.startButton.setEnabled(False)
+        else:
+            self.startButton.setEnabled(True)
 
         self.textDisplay.setText('>> %s@%s - %s - %s'%(self.instToLog, self.adressToLog, self.chToLog, self.vTypeToLog))
 

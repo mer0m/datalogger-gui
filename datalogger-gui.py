@@ -210,7 +210,7 @@ class mainGui():
     def stopLog(self):
         self.startButton.setEnabled(True)
         self.stopButton.setEnabled(False)
-        self.adress.setEnabled(False)
+        self.adress.setEnabled(True)
         self.comboInst.setEnabled(True)
         for i in self.checkBoxChannels:
             i.setEnabled(True)

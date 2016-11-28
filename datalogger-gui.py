@@ -162,6 +162,7 @@ class mainGui():
             self.layout.addWidget(self.chListVtypes[i], i, 2)
             self.checkBoxChannels[i].stateChanged.connect(self.infoSignal)
             self.chListVtypes[i].currentItemChanged.connect(self.infoSignal)
+            self.chListVtypes[i].setEnabled(False)
 
         self.adress.textChanged.connect(self.infoSignal)
 
@@ -176,8 +177,12 @@ class mainGui():
 
         for i in range(len(self.checkBoxChannels)):
             if self.checkBoxChannels[i].isChecked():
+                self.chListVtypes[i].setEnabled(True)
                 self.chToLog.append(str(self.checkBoxChannels[i].text()))
                 self.vTypeToLog.append(str(self.chListVtypes[i].currentItem().text()))
+            else:
+                self.chListVtypes[i].setEnabled(False)
+
         self.textDisplay.setText('>> %s@%s - %s - %s'%(self.instToLog, self.adressToLog, self.chToLog, self.vTypeToLog))
 
         self.myLog = acq_routine(self.instToLog, self.chToLog, self.vTypeToLog, self.adressToLog)

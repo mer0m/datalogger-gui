@@ -104,10 +104,12 @@ class mainGui():
         self.startButton = QtGui.QPushButton()
         self.startButton.setText('Start log')
         self.layout.addWidget(self.startButton, 99, 1)
+        self.startButton.setEnabled(True)
 
         self.stopButton = QtGui.QPushButton()
         self.stopButton.setText('Stop log')
         self.layout.addWidget(self.stopButton, 99, 2)
+        self.stopButton.setEnabled(False)
 
         self.textDisplay = QtGui.QLabel()
         self.textDisplay.setText('>>')
@@ -161,6 +163,8 @@ class mainGui():
             self.checkBoxChannels[i].stateChanged.connect(self.infoSignal)
             self.chListVtypes[i].currentItemChanged.connect(self.infoSignal)
 
+        self.adress.textChanged.connect(self.infoSignal)
+
         self.infoSignal()
 
     @pyqtSlot()
@@ -180,11 +184,15 @@ class mainGui():
 
     @pyqtSlot()
     def startLog(self):
+        self.startButton.setEnabled(False)
+        self.stopButton.setEnabled(True)
         self.myLog.connect()
         self.myLog.start()
 
     @pyqtSlot()
     def stopLog(self):
+        self.startButton.setEnabled(True)
+        self.stopButton.setEnabled(False)
         self.myLog.stop()
 
 #==============================================================================

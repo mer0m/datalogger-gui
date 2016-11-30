@@ -3,11 +3,11 @@ import socket
 
 #==============================================================================
 
-ALL_VAL_TYPE = ['FREQ']
-ALL_CHANNELS = ['1', '2']
+ALL_VAL_TYPE = ['FREQ']  #, 'PERIOD']
+ALL_CHANNELS = ['1'] #, '2']
 
 ADRESS = "192.168.0.52"
-CONF_VAL_TYPE = [':FETCH:FREQ?']
+CONF_VAL_TYPE = ['CONF:FREQ'] #, 'CONF:PERIOD']
 
 #==============================================================================
 
@@ -39,16 +39,20 @@ class HP53132A(abstract_instrument):
     def configure(self):
         self.strCh = ''
         for ch in self.channels:
-            self.strCh = self.strCh + '%s;'%(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])])
+            self.send('%s (@%s)'%(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])], ch))
+            self.strCh = self.strCh + '(@%s),'%ch
         self.strCh = self.strCh[0:-1]
-        self.send(':FORMAT ASCII')
+        self.send('FORMAT ASCII')
+
+        #self.send('ROUT:SCAN (@%s)'%self.strCh)
+        #self.send('TRIG:COUN 1')
+        self.send('*RST')
         self.send(":FUNC 'FREQ 1'")
         self.send(":ROSC:SOUR INT")
         self.send(":INIT:CONT ON")
-        print(self.strCh)
 
     def getValue(self):
-        self.send(self.strCh)
+        self.send('FETC?')
         return self.read()
 
     def read(self):

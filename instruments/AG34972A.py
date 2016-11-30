@@ -15,13 +15,13 @@ class AG34972A(abstract_instrument):
     def __init__(self, channels, vtypes, adress):
         self.adress = adress
         self.port = 5025
-	self.channels = channels
+        self.channels = channels
         self.vtypes = vtypes
 
     def model(self):
         #self.send("*IDN?")
         #return self.read()
-	return "AG34972A"
+        return "AG34972A"
 
     def connect(self):
         print('Connecting to device @%s:%s...' %(self.adress, self.port))
@@ -37,16 +37,16 @@ class AG34972A(abstract_instrument):
 
     def configure(self):
         self.strCh = ''
-	for ch in self.channels:
+        for ch in self.channels:
             self.send('%s (@%s)'%(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])], ch))
-	    self.strCh = self.strCh + ch + ','
-	self.strCh = self.strCh[0:-1]
-	self.send("ROUT:SCAN (@%s)"%self.strCh)                                                                      
-        self.send("TRIG:COUN 1") 
+            self.strCh = self.strCh + ch + ','
+        self.strCh = self.strCh[0:-1]
+        self.send("ROUT:SCAN (@%s)"%self.strCh)
+        self.send("TRIG:COUN 1")
 
     def getValue(self):
         self.send("INIT")
-	self.send("FETC?")
+        self.send("FETC?")
         return self.read()
 
     def read(self):

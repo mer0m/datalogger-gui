@@ -15,13 +15,13 @@ class LS350(abstract_instrument):
     def __init__(self, channels, vtypes, adress):
         self.adress = adress
         self.port = 7777
-	self.channels = channels
+        self.channels = channels
         self.vtypes = vtypes
 
     def model(self):
         #self.send("*IDN?")
         #return self.read()
-	return "LS350"
+        return "LS350"
 
     def connect(self):
         print('Connecting to device @%s:%s...' %(self.adress, self.port))
@@ -32,14 +32,14 @@ class LS350(abstract_instrument):
         self.sock.connect((self.adress, self.port))
         print('  --> Ok')
         print(self.model())
-	self.configure()
+        self.configure()
 
     def configure(self):
-	self.strCh = ''
-	for ch in self.channels:
-	    self.strCh = self.strCh + '%s %s;'%(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])], ch)
-	self.strCh = self.strCh[0:-1]
-	print(self.strCh)
+        self.strCh = ''
+        for ch in self.channels:
+            self.strCh = self.strCh + '%s %s;'%(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])], ch)
+        self.strCh = self.strCh[0:-1]
+        print(self.strCh)
 
     def getValue(self):
         self.send(self.strCh)

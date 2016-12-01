@@ -21,7 +21,7 @@ class AG34461A(abstract_instrument):
     def model(self):
         #self.send("*IDN?")
         #return self.read()
-	return "AG34461A"
+        return "AG34461A"
 
     def connect(self):
         print('Connecting to device @%s:%s...' %(self.adress, self.port))

@@ -37,22 +37,32 @@ class HP53132A(abstract_instrument):
         self.configure()
 
     def configure(self):
-        self.strCh = ''
-        for ch in self.channels:
-            self.send('%s (@%s)'%(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])], ch))
-            self.strCh = self.strCh + '(@%s),'%ch
-        self.strCh = self.strCh[0:-1]
-        self.send('FORMAT ASCII')
+        #self.strCh = ''
+        #for ch in self.channels:
+        #    self.send('%s (@%s)'%(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])], ch))
+        #    self.strCh = self.strCh + '(@%s),'%ch
+        #self.strCh = self.strCh[0:-1]
+        #self.send('FORMAT ASCII')
 
         #self.send('ROUT:SCAN (@%s)'%self.strCh)
         #self.send('TRIG:COUN 1')
         self.send('*RST')
-        self.send(":FUNC 'FREQ 1'")
-        self.send(":ROSC:SOUR INT")
-        self.send(":INIT:CONT ON")
+        #self.send('*CLS')
+        #self.send('*SRE 0')
+        #self.send('*ESE 0')
+
+        self.send(':FUNC "FREQ 1"')
+        self.send(':FREQ:ARM:STAR:SOUR IMM')
+        self.send(':FREQ:ARM:STOP:SOUR TIM')
+        self.send(':FREQ:ARM:STOP:TIM 1')
+        self.send(':ROSC:SOUR EXT')
+        self.send(':ROSC:EXT:CHECK OFF')
+        #self.send(':STAT:PRES')
+        self.send(':INIT:CONT ON')
 
     def getValue(self):
         self.send('FETC?')
+        #self.send('READ:FREQ?')
         return self.read()
 
     def read(self):

@@ -14,23 +14,23 @@ CONF_VAL_TYPE = ['PWR']
 class PM100D(abstract_instrument):
     def __init__(self, channels, vtypes, adress):
         self.adress = adress
-	self.channels = channels
+        self.channels = channels
         self.vtypes = vtypes
 
     def model(self):
         #self.send("*IDN?")
         #return self.read()
-	return "PM100D"
+        return "PM100D"
 
     def connect(self):
         print('Connecting to device @%s...' %(self.adress))
         self.FILE = os.open(self.adress, os.O_RDWR)
         print('  --> Ok')
         print(self.model())
-	self.configure()
+        self.configure()
 
     def configure(self):
-	pass
+        pass
 
     def getValue(self):
         self.send("READ?")

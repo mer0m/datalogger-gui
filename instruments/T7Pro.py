@@ -4,11 +4,11 @@ import numpy
 
 #==============================================================================
 
-ALL_VAL_TYPE = ['RES', 'TEMP PT100 K', 'TEMP PT100 C']
-ALL_CHANNELS = ['1', '2', '3', '4']
+ALL_VAL_TYPE = ['RES', 'TEMP PT100 K', 'TEMP PT100 C', 'TEMP AIR K']
+ALL_CHANNELS = ['1', '2', '3', '4', 'TEMP AIR K']
 
 ADDRESS = "192.168.0.25"
-CONF_CHANNELS = [["AIN0", "AIN10"], ["AIN2", "AIN11"], ["AIN4", "AIN12"], ["AIN6", "AIN13"]]
+CONF_CHANNELS = [["AIN0", "AIN10"], ["AIN2", "AIN11"], ["AIN4", "AIN12"], ["AIN6", "AIN13"], ["TEMPERATURE_AIR_K"]]
 VISHAY_CHANNELS = [1000., 1000., 1079., 10000.]
 
 #==============================================================================
@@ -76,6 +76,9 @@ class T7Pro(abstract_instrument):
             elif self.vtypes[self.channels.index(ch)] == 'TEMP PT100 C':
                 raw = self.read(CONF_CHANNELS[ALL_CHANNELS.index(ch)])
                 strMes = strMes + str(((VISHAY_CHANNELS[ALL_CHANNELS.index(ch)]*raw[0]/raw[1])/100.-1)/0.003850) + ';'
+            elif self.vtypes[self.channels.index(ch)] == 'TEMP AIR K':
+                raw = self.read(CONF_CHANNELS[ALL_CHANNELS.index(ch)])
+                strMes = strMes + str(raw[0]) + ';'
 
         strMes = strMes[0:-1] + '\n'
         return(strMes)

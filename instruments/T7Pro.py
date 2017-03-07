@@ -7,15 +7,15 @@ import numpy
 ALL_VAL_TYPE = ['RES', 'TEMP PT100 K', 'TEMP PT100 C']
 ALL_CHANNELS = ['1', '2', '3', '4']
 
-ADRESS = "192.168.0.25"
+ADDRESS = "192.168.0.25"
 CONF_CHANNELS = [["AIN0", "AIN10"], ["AIN2", "AIN11"], ["AIN4", "AIN12"], ["AIN6", "AIN13"]]
 VISHAY_CHANNELS = [1000., 1000., 1079., 10000.]
 
 #==============================================================================
 
 class T7Pro(abstract_instrument):
-    def __init__(self, channels, vtypes, adress):
-        self.adress = adress
+    def __init__(self, channels, vtypes, address):
+        self.address = address
         self.channels = channels
         self.vtypes = vtypes
 
@@ -23,8 +23,8 @@ class T7Pro(abstract_instrument):
         return 'T7Pro'
 
     def connect(self):
-        print('Connecting to device @%s...' %(self.adress))
-        self.handle = ljm.openS("T7", "ETHERNET", self.adress)
+        print('Connecting to device @%s...' %(self.address))
+        self.handle = ljm.openS("T7", "ETHERNET", self.address)
         print('  --> Ok')
         print(self.model())
         self.configure()

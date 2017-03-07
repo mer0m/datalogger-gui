@@ -6,14 +6,14 @@ import socket
 ALL_VAL_TYPE = ['DCV', 'ACV', 'DCI', 'ACI', 'RES2W', 'RES4W', 'FREQ']
 ALL_CHANNELS = ['101', '102', '103', '104', '105']
 
-ADRESS = "192.168.0.72"
+ADDRESS = "192.168.0.72"
 CONF_VAL_TYPE = ['CONF:VOLT:DC', 'CONF:VOLT:AC', 'CONF:CURR:DC', 'CONF:CURR:AC', 'CONF:RES', 'CONF:FRES', 'CONF:FREQ']
 
 #==============================================================================
 
 class AG34972A(abstract_instrument):
-    def __init__(self, channels, vtypes, adress):
-        self.adress = adress
+    def __init__(self, channels, vtypes, address):
+        self.address = address
         self.port = 5025
         self.channels = channels
         self.vtypes = vtypes
@@ -24,12 +24,12 @@ class AG34972A(abstract_instrument):
         return "AG34972A"
 
     def connect(self):
-        print('Connecting to device @%s:%s...' %(self.adress, self.port))
+        print('Connecting to device @%s:%s...' %(self.address, self.port))
         self.sock = socket.socket(socket.AF_INET,
                              socket.SOCK_STREAM,
                              socket.IPPROTO_TCP)
         self.sock.settimeout(2.0)    # Don't hang around forever
-        self.sock.connect((self.adress, self.port))
+        self.sock.connect((self.address, self.port))
         self.send("SYST:BEEP")
         print('  --> Ok')
         print(self.model())

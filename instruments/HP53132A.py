@@ -6,14 +6,14 @@ import socket
 ALL_VAL_TYPE = ['FREQ']  #, 'PERIOD']
 ALL_CHANNELS = ['1'] #, '2']
 
-ADRESS = "192.168.0.52"
+ADDRESS = "192.168.0.52"
 CONF_VAL_TYPE = ['CONF:FREQ'] #, 'CONF:PERIOD']
 
 #==============================================================================
 
 class HP53132A(abstract_instrument):
-    def __init__(self, channels, vtypes, adress):
-        self.adress = adress
+    def __init__(self, channels, vtypes, address):
+        self.address = address
         self.port = 1234
         self.gpib_addr = 12
         self.channels = channels
@@ -25,12 +25,12 @@ class HP53132A(abstract_instrument):
         return "HP53132A"
 
     def connect(self):
-        print('Connecting to device @%s:%s...' %(self.adress, self.port))
+        print('Connecting to device @%s:%s...' %(self.address, self.port))
         self.sock = socket.socket(socket.AF_INET,
                              socket.SOCK_STREAM,
                              socket.IPPROTO_TCP)
         self.sock.settimeout(10.0)    # Don't hang around forever
-        self.sock.connect((self.adress, self.port))
+        self.sock.connect((self.address, self.port))
         self.init_prologix()
         print('  --> Ok')
         print(self.model())

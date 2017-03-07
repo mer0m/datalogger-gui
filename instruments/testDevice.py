@@ -5,12 +5,12 @@ import numpy, time
 
 ALL_VAL_TYPE = ['vtype', 'DCV', 'ACV', 'DCI', 'ACI', 'RES2W', 'RES4W', 'FREQ']
 ALL_CHANNELS = ['0', '1']
-address = "123.456.789.123"
+ADDRESS = "123.456.789.123"
 
 #==============================================================================
 
 class testDevice(abstract_instrument):
-    def __init__(self, channels,  vtype, address = address):
+    def __init__(self, channels,  vtype, address):
         self.address = address
         self.port = 9999
         self.channels = channels

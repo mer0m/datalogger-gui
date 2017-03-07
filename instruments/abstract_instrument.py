@@ -4,7 +4,7 @@ class abstract_instrument(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def __init__(self, adress, vtype, channel):
+    def __init__(self, address, vtype, channel):
         """Build the class"""
         return
 

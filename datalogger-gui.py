@@ -10,8 +10,8 @@ from PyQt4.QtCore import pyqtSlot
 #==============================================================================
 
 class acq_routine():
-    def __init__(self, instrument, channels, vtypes, adress, path = os.getcwd(), samplingtime = 1, fileduration = 24*3600):
-        exec('self.instrument = instruments.%s.%s(%s, %s, "%s")'%(instrument, instrument, channels, vtypes, adress))
+    def __init__(self, instrument, channels, vtypes, address, path = os.getcwd(), samplingtime = 1, fileduration = 24*3600):
+        exec('self.instrument = instruments.%s.%s(%s, %s, "%s")'%(instrument, instrument, channels, vtypes, address))
         self.path = path
         self.samplingtime = samplingtime
         self.fileduration = fileduration
@@ -97,9 +97,9 @@ class mainGui():
         self.comboInst = QtGui.QComboBox()
         self.layout.addWidget(self.comboInst, 0, 0)
 
-        self.adress = QtGui.QLineEdit()
-        self.adress.setMaximumWidth(120)
-        self.layout.addWidget(self.adress, 99, 0)
+        self.address = QtGui.QLineEdit()
+        self.address.setMaximumWidth(120)
+        self.layout.addWidget(self.address, 99, 0)
 
         self.startButton = QtGui.QPushButton()
         self.startButton.setText('Start log')
@@ -137,15 +137,15 @@ class mainGui():
         for i in reversed(range(5, self.layout.count())):
             self.layout.itemAt(i).widget().setParent(None)
 
-        defaultAdress = ''
+        defaultAddress = ''
         channelsAviables = []
         vtypesAviables = []
 
         exec('channelsAviables = instruments.%s.ALL_CHANNELS'%self.comboInst.currentText())
         exec('vtypesAviables = instruments.%s.ALL_VAL_TYPE'%self.comboInst.currentText())
-        exec('defaultAdress = instruments.%s.ADRESS'%self.comboInst.currentText())
+        exec('defaultAddress = instruments.%s.ADDRESS'%self.comboInst.currentText())
 
-        self.adress.setText(defaultAdress)
+        self.address.setText(defaultAddress)
 
         self.checkBoxChannels = [None]*len(channelsAviables)
         self.chListVtypes = [None]*len(self.checkBoxChannels)
@@ -163,14 +163,14 @@ class mainGui():
             self.checkBoxChannels[i].stateChanged.connect(self.infoSignal)
             self.chListVtypes[i].currentItemChanged.connect(self.infoSignal)
 
-        self.adress.textChanged.connect(self.infoSignal)
+        self.address.textChanged.connect(self.infoSignal)
 
         self.infoSignal()
 
     @pyqtSlot()
     def infoSignal(self):
         self.instToLog = self.comboInst.currentText()
-        self.adressToLog = self.adress.text()
+        self.addressToLog = self.address.text()
         self.chToLog = []
         self.vTypeToLog = []
 
@@ -190,15 +190,15 @@ class mainGui():
         else:
             self.startButton.setEnabled(True)
 
-        self.textDisplay.setText('>> %s@%s - %s - %s'%(self.instToLog, self.adressToLog, self.chToLog, self.vTypeToLog))
+        self.textDisplay.setText('>> %s@%s - %s - %s'%(self.instToLog, self.addressToLog, self.chToLog, self.vTypeToLog))
 
-        self.myLog = acq_routine(self.instToLog, self.chToLog, self.vTypeToLog, self.adressToLog)
+        self.myLog = acq_routine(self.instToLog, self.chToLog, self.vTypeToLog, self.addressToLog)
 
     @pyqtSlot()
     def startLog(self):
         self.startButton.setEnabled(False)
         self.stopButton.setEnabled(True)
-        self.adress.setEnabled(False)
+        self.address.setEnabled(False)
         self.comboInst.setEnabled(False)
         for i in self.checkBoxChannels:
             i.setEnabled(False)
@@ -211,7 +211,7 @@ class mainGui():
     def stopLog(self):
         self.startButton.setEnabled(True)
         self.stopButton.setEnabled(False)
-        self.adress.setEnabled(True)
+        self.address.setEnabled(True)
         self.comboInst.setEnabled(True)
         for i in range(len(self.checkBoxChannels)):
             if self.checkBoxChannels[i].isChecked():

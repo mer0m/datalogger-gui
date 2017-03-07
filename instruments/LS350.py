@@ -6,14 +6,14 @@ import socket
 ALL_VAL_TYPE = ['TEMP', 'RES']
 ALL_CHANNELS = ['a', 'b', 'c', 'd']
 
-ADRESS = "192.168.0.12"
+ADDRESS = "192.168.0.12"
 CONF_VAL_TYPE = ['krdg?', 'srdg?']
 
 #==============================================================================
 
 class LS350(abstract_instrument):
-    def __init__(self, channels, vtypes, adress):
-        self.adress = adress
+    def __init__(self, channels, vtypes, address):
+        self.address = address
         self.port = 7777
         self.channels = channels
         self.vtypes = vtypes
@@ -24,12 +24,12 @@ class LS350(abstract_instrument):
         return "LS350"
 
     def connect(self):
-        print('Connecting to device @%s:%s...' %(self.adress, self.port))
+        print('Connecting to device @%s:%s...' %(self.address, self.port))
         self.sock = socket.socket(socket.AF_INET,
                              socket.SOCK_STREAM,
                              socket.IPPROTO_TCP)
         self.sock.settimeout(10.0)    # Don't hang around forever
-        self.sock.connect((self.adress, self.port))
+        self.sock.connect((self.address, self.port))
         print('  --> Ok')
         print(self.model())
         self.configure()

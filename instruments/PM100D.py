@@ -6,14 +6,14 @@ import os
 ALL_VAL_TYPE = ['PWR']
 ALL_CHANNELS = ['1']
 
-ADRESS = "/dev/usbtmc0"
+ADDRESS = "/dev/usbtmc0"
 CONF_VAL_TYPE = ['PWR']
 
 #==============================================================================
 
 class PM100D(abstract_instrument):
-    def __init__(self, channels, vtypes, adress):
-        self.adress = adress
+    def __init__(self, channels, vtypes, address):
+        self.address = address
         self.channels = channels
         self.vtypes = vtypes
 
@@ -23,8 +23,8 @@ class PM100D(abstract_instrument):
         return "PM100D"
 
     def connect(self):
-        print('Connecting to device @%s...' %(self.adress))
-        self.FILE = os.open(self.adress, os.O_RDWR)
+        print('Connecting to device @%s...' %(self.address))
+        self.FILE = os.open(self.address, os.O_RDWR)
         print('  --> Ok')
         print(self.model())
         self.configure()

@@ -5,13 +5,13 @@ import serial
 
 ALL_VAL_TYPE = ['PRE']
 ALL_CHANNELS = ['1']
-ADRESS = "/dev/ttyS0"
+ADDRESS = "/dev/ttyS0"
 
 #==============================================================================
 
 class TPG261(abstract_instrument):
-    def __init__(self, channels, vtypes, adress):
-        self.adress = adress
+    def __init__(self, channels, vtypes, address):
+        self.address = address
         self.channels = channels
         self.vtypes = vtypes
 
@@ -19,8 +19,8 @@ class TPG261(abstract_instrument):
         return "PfeifferTPG261"
 
     def connect(self):
-        print('Connecting to device @%s...' %(self.adress))
-        self.TPG = MaxiGauge(self.adress)
+        print('Connecting to device @%s...' %(self.address))
+        self.TPG = MaxiGauge(self.address)
         print('  --> Ok')
         print(self.model())
         self.configure()

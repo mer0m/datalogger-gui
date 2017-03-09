@@ -98,22 +98,23 @@ class mainGui():
         self.layout.addWidget(self.comboInst, 0, 0)
 
         self.address = QtGui.QLineEdit()
-        self.address.setMaximumWidth(120)
-        self.layout.addWidget(self.address, 99, 0)
+        self.address.setMinimumWidth(140)
+        self.address.setMaximumWidth(140)
+        self.layout.addWidget(self.address, 0, 1)
 
         self.startButton = QtGui.QPushButton()
         self.startButton.setText('Start log')
-        self.layout.addWidget(self.startButton, 99, 1)
+        self.layout.addWidget(self.startButton, 99, 0)
         self.startButton.setEnabled(False)
 
         self.stopButton = QtGui.QPushButton()
         self.stopButton.setText('Stop log')
-        self.layout.addWidget(self.stopButton, 99, 2)
+        self.layout.addWidget(self.stopButton, 99, 1)
         self.stopButton.setEnabled(False)
 
         self.textDisplay = QtGui.QLabel()
         self.textDisplay.setText('>>')
-        self.layout.addWidget(self.textDisplay, 100, 2)
+        self.layout.addWidget(self.textDisplay, 99, 2)
 
         self.setComboInst()
         self.updateSignal()
@@ -158,8 +159,8 @@ class mainGui():
             for vtype in vtypesAviables:
                 self.chListVtypes[i].addItem(vtype)
             self.chListVtypes[i].setCurrentRow(0)
-            self.layout.addWidget(self.checkBoxChannels[i], i, 1)
-            self.layout.addWidget(self.chListVtypes[i], i, 2)
+            self.layout.addWidget(self.checkBoxChannels[i], i+3, 1)
+            self.layout.addWidget(self.chListVtypes[i], i+3, 2)
             self.checkBoxChannels[i].stateChanged.connect(self.infoSignal)
             self.chListVtypes[i].currentItemChanged.connect(self.infoSignal)
 

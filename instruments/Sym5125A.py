@@ -34,7 +34,8 @@ class Sym5125A(abstract_instrument):
         pass
 
     def getValue(self):
-        return self.tn.read_until('\n').replace('\r\n','')
+        mes = self.tn.read_until('\n').replace('\r\n','')
+        return mes + '\n'
 
     def read(self):
         pass

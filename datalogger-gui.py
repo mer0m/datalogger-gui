@@ -131,7 +131,15 @@ class mainGui():
 
     def runApp(self):
         self.w.show()
+        self.a.aboutToQuit.connect(self.closeEvent)
         sys.exit(self.a.exec_())
+
+    def closeEvent(self):
+        try:
+            self.stopLog()
+        except:
+            pass
+        print('Done')
 
     @pyqtSlot()
     def updateSignal(self):

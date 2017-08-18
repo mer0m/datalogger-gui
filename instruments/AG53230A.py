@@ -40,6 +40,8 @@ class AG53230A(abstract_instrument):
             self.send('INP:COUP AC')
             self.send('INP:IMP 50')
             self.send('SENS:FREQ:GATE:TIME 1')
+            self.send('SENS:ROSC:SOUR EXT')
+            self.send('SENS:ROSC:EXT:FREQ 10E6')
             self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])])
 
     def getValue(self):

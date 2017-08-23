@@ -61,6 +61,7 @@ class acq_routine():
         meas = meas.replace(",", "\t")
         meas = meas.replace(";", "\t")
         meas = meas.replace("+", "")
+        meas = meas.replace("E", "e")
 
         string = "%f\t%f\t%s" % (epoch, mjd, meas)
         self.data_file.write(string) # Write in a file

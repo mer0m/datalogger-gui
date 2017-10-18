@@ -36,18 +36,25 @@ class AG53230A(abstract_instrument):
         self.configure()
 
     def configure(self):
+        self.send('*RST')
+        self.send('DISP:DIG:MASK:AUTO OFF')
+        self.send('INP1:IMP 50')
+        self.send('INP1:COUP AC')
+        self.send('SYST:TIM INF')
+        self.send('SENS:ROSC:SOUR EXT')
+        self.send('SENS:ROSC:EXT:FREQ 10E6')
         for ch in self.channels:
-            self.send('INP:COUP AC')
-            self.send('INP:IMP 50')
-            self.send('SENS:FREQ:GATE:TIME 1')
-            self.send('SENS:ROSC:SOUR EXT')
-            self.send('SENS:ROSC:EXT:FREQ 10E6')
             self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])])
+        self.send('SAMP:COUN 1E6')
+        self.send('SENS:FREQ:MODE CONT')
+        self.send('SENS:FREQ:GATE:SOUR TIME')
+        self.send('1')
+        self.send('TRIG:SOUR IMM')
 
     def getValue(self):
         mes = ''
         for ch in self.channels:
-            self.send("READ?")
+            self.send("DATA:REM?")
             mesTemp = self.read()
             mes = mes + '\t' + mesTemp
         return mes

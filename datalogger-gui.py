@@ -10,7 +10,7 @@ from PyQt4.QtCore import pyqtSlot
 #==============================================================================
 
 class acq_routine():
-    def __init__(self, instrument, channels, vtypes, address, path = os.getcwd(), samplingtime = 1, fileduration = 24*3600):
+    def __init__(self, instrument, channels, vtypes, address, samplingtime, path = os.getcwd(), fileduration = 24*3600):
         exec('self.instrument = instruments.%s.%s(%s, %s, "%s")'%(instrument, instrument, channels, vtypes, address))
         self.path = path
         self.samplingtime = samplingtime
@@ -103,6 +103,15 @@ class mainGui():
         self.address.setMaximumWidth(140)
         self.layout.addWidget(self.address, 0, 1)
 
+        self.samplingtime = QtGui.QDoubleSpinBox()
+        #self.samplingtime.setMinimumWidth(60)
+        #self.samplingtime.setMaximumWidth(60)
+        self.samplingtime.setMinimum(0.1)
+        self.samplingtime.setMaximum(1000)
+        self.samplingtime.setSingleStep(0.1)
+        self.samplingtime.setValue(1)
+        self.layout.addWidget(self.samplingtime, 0, 2)
+
         self.startButton = QtGui.QPushButton()
         self.startButton.setText('Start log')
         self.layout.addWidget(self.startButton, 99, 0)
@@ -174,6 +183,7 @@ class mainGui():
             self.chListVtypes[i].currentItemChanged.connect(self.infoSignal)
 
         self.address.textChanged.connect(self.infoSignal)
+        self.samplingtime.valueChanged.connect(self.infoSignal)
 
         self.infoSignal()
 
@@ -183,6 +193,7 @@ class mainGui():
         self.addressToLog = self.address.text()
         self.chToLog = []
         self.vTypeToLog = []
+        self.ts = self.samplingtime.value()
 
         for i in range(len(self.checkBoxChannels)):
             if self.checkBoxChannels[i].isChecked():
@@ -200,15 +211,16 @@ class mainGui():
         else:
             self.startButton.setEnabled(True)
 
-        self.textDisplay.setText('>> %s@%s - %s - %s'%(self.instToLog, self.addressToLog, self.chToLog, self.vTypeToLog))
+        self.textDisplay.setText('>> %s@%s - %s - %s - %d'%(self.instToLog, self.addressToLog, self.chToLog, self.vTypeToLog, self.ts))
 
-        self.myLog = acq_routine(self.instToLog, self.chToLog, self.vTypeToLog, self.addressToLog)
+        self.myLog = acq_routine(self.instToLog, self.chToLog, self.vTypeToLog, self.addressToLog, self.ts)
 
     @pyqtSlot()
     def startLog(self):
         self.startButton.setEnabled(False)
         self.stopButton.setEnabled(True)
         self.address.setEnabled(False)
+        self.samplingtime.setReadOnly(True)
         self.comboInst.setEnabled(False)
         for i in self.checkBoxChannels:
             i.setEnabled(False)
@@ -222,6 +234,7 @@ class mainGui():
         self.startButton.setEnabled(True)
         self.stopButton.setEnabled(False)
         self.address.setEnabled(True)
+        self.samplingtime.setReadOnly(False)
         self.comboInst.setEnabled(True)
         for i in range(len(self.checkBoxChannels)):
             if self.checkBoxChannels[i].isChecked():

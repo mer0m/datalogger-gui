@@ -55,6 +55,7 @@ class AG34461A_avg(abstract_instrument):
             mesTemp = map(float, mesTemp.split(','))
             mes = mes + '\t' + str(sum(mesTemp)/len(mesTemp))
             self.send("INIT")
+        mes = mes + '\n'
         return mes
 
     def read(self):

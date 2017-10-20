@@ -22,7 +22,7 @@ class AG34461A_avg(abstract_instrument):
     def model(self):
         #self.send("*IDN?")
         #return self.read()
-        return "AG34461A"
+        return "AG34461A_avg"
 
     def connect(self):
         print('Connecting to device @%s:%s...' %(self.address, self.port))
@@ -38,13 +38,14 @@ class AG34461A_avg(abstract_instrument):
         self.send("*RST")
         for ch in self.channels:
             self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])])
-        self.send("CONF:VOLT:DC 10")
-        #self.send("VOLT:DC:NPLC 10")
-        self.send("SAMP:COUN 1")
-        self.send("TRIG:COUN 5")
+        #self.send("CONF:VOLT:DC 1")
+        self.send("VOLT:DC:NPLC 10")
+        self.send("SAMP:COUN 5")
+        self.send("TRIG:COUN 1")
         self.send("TRIG:DEL 0")
         self.send("SENS:ZERO:AUTO OFF")
-        self.send("TRIG:SOUR IMM")
+        self.send("TRIG:SOUR TIM")
+        self.send("TRIG:TIM 0.2")
         self.send("INIT")
 
     def getValue(self):
@@ -52,6 +53,7 @@ class AG34461A_avg(abstract_instrument):
         for ch in self.channels:
             self.send("FETC?")
             mesTemp = self.read()
+            #print(mesTemp)
             mesTemp = map(float, mesTemp.split(','))
             mes = mes + '\t' + str(sum(mesTemp)/len(mesTemp))
             self.send("INIT")

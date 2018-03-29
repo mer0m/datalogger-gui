@@ -60,6 +60,7 @@ class acq_routine():
 		meas = self.instrument.getValue()
 		meas = meas.replace(",", "\t")
 		meas = meas.replace(";", "\t")
+		meas = meas.replace("\t\t", "\t")
 		meas = meas.replace("+", "")
 		meas = meas.replace("E", "e")
 

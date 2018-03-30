@@ -60,11 +60,11 @@ class acq_routine():
 		meas = self.instrument.getValue()
 		meas = meas.replace(",", "\t")
 		meas = meas.replace(";", "\t")
-		meas = meas.replace("\t\t", "\t")
 		meas = meas.replace("+", "")
 		meas = meas.replace("E", "e")
 
 		string = "%f\t%f\t%s" % (epoch, mjd, meas)
+		string = string.replace("\t\t", "\t")
 		self.data_file.write(string) # Write in a file
 		print(string)
 

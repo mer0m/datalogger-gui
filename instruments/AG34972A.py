@@ -4,7 +4,7 @@ import socket
 #==============================================================================
 
 ALL_VAL_TYPE = ['DCV', 'ACV', 'DCI', 'ACI', 'RES2W', 'RES4W', 'FREQ']
-ALL_CHANNELS = ['101', '102', '103', '104', '105']
+ALL_CHANNELS = ['101', '102', '103', '104', '105', '106', '107']
 
 ADDRESS = "192.168.0.72"
 CONF_VAL_TYPE = ['CONF:VOLT:DC', 'CONF:VOLT:AC', 'CONF:CURR:DC', 'CONF:CURR:AC', 'CONF:RES', 'CONF:FRES', 'CONF:FREQ']

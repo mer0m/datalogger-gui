@@ -47,7 +47,7 @@ class FPC1000(abstract_instrument):
 			self.send(CONF_VAL_TYPE[int(ch)-1])
 			mesTemp = self.read()
 			mes = mes + '\t' + mesTemp.replace('\n', '')
-		return mes
+		return mes + '\n'
 
 	def read(self):
 		ans = ''

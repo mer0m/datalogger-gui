@@ -3,11 +3,11 @@ import socket
 
 #==============================================================================
 
-ALL_VAL_TYPE = ['PWR_MKR1']
-ALL_CHANNELS = ['1']
+ALL_VAL_TYPE = ['PWR_MKR']
+ALL_CHANNELS = ['1', '2', '3', '4']
 
 ADDRESS = "192.168.0.17"
-CONF_VAL_TYPE = ['CALC:MARK1:MAX:PEAK']
+CONF_VAL_TYPE = ['CALC:MARK1:Y?', 'CALC:MARK2:Y?', 'CALC:MARK3:Y?', 'CALC:MARK4:Y?']
 
 #==============================================================================
 
@@ -36,16 +36,17 @@ class FPC1000(abstract_instrument):
 		self.configure()
 
 	def configure(self):
-		for ch in self.channels:
-			self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])])
+		#for ch in self.channels:
+		#	self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])])
+		pass
 
 	def getValue(self):
 		mes = ''
 		for ch in self.channels:
-			self.send('CALC:MARK1:MAX:PEAK')
-			self.send("CALC:MARK1:Y?")
+			#self.send('CALC:MARK1:MAX:PEAK')
+			self.send(CONF_VAL_TYPE[int(ch)-1])
 			mesTemp = self.read()
-			mes = mes + '\t' + mesTemp
+			mes = mes + '\t' + mesTemp.replace('\n', '')
 		return mes
 
 	def read(self):

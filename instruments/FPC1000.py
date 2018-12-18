@@ -7,7 +7,7 @@ ALL_VAL_TYPE = ['PWR_MKR']
 ALL_CHANNELS = ['1', '2', '3', '4']
 
 ADDRESS = "192.168.0.17"
-CONF_VAL_TYPE = ['CALC:MARK1:Y?', 'CALC:MARK2:Y?', 'CALC:MARK3:Y?', 'CALC:MARK4:Y?']
+CONF_VAL_TYPE = ['CALC:MARKi:Y?']
 
 #==============================================================================
 
@@ -43,8 +43,7 @@ class FPC1000(abstract_instrument):
 	def getValue(self):
 		mes = ''
 		for ch in self.channels:
-			#self.send('CALC:MARK1:MAX:PEAK')
-			self.send(CONF_VAL_TYPE[int(ch)-1])
+			self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])].replace('i', str(ch)))
 			mesTemp = self.read()
 			mes = mes + '\t' + mesTemp.replace('\n', '')
 		return mes + '\n'

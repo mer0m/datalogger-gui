@@ -1,0 +1,7 @@
+datalogger-gui is used to monitor different devices by a common interface.
+
+key points:
+- minimal driver for specific instrument
+- common file management/communications
+- testDevice for dev
+- abstracted instrument

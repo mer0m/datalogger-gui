@@ -7,15 +7,16 @@ ALL_VAL_TYPE = ['FREQ']  #, 'PERIOD']
 ALL_CHANNELS = ['1'] #, '2']
 
 ADDRESS = "192.168.0.52"
+ADDITIONAL_ADDRESS = "12"
 CONF_VAL_TYPE = ['CONF:FREQ'] #, 'CONF:PERIOD']
 
 #==============================================================================
 
 class HP53132A(abstract_instrument):
-	def __init__(self, channels, vtypes, address):
+	def __init__(self, channels, vtypes, address, additional_address):
 		self.address = address
 		self.port = 1234
-		self.gpib_addr = 12
+		self.gpib_addr = additional_address
 		self.channels = channels
 		self.vtypes = vtypes
 
@@ -25,7 +26,7 @@ class HP53132A(abstract_instrument):
 		return "HP53132A"
 
 	def connect(self):
-		print('Connecting to device @%s:%s...' %(self.address, self.port))
+		print('Connecting to device @%s:%s GPIB:%s...' %(self.address, self.port, self.gpib_addr))
 		self.sock = socket.socket(socket.AF_INET,
 							 socket.SOCK_STREAM,
 							 socket.IPPROTO_TCP)
@@ -92,7 +93,7 @@ class HP53132A(abstract_instrument):
 	def init_prologix(self):
 		try:
 			self.sock.send("++mode 1\n") # Set mode as CONTROLLER
-			self.sock.send('++addr ' + str(self.gpib_addr) + '\n') # Set the GPIB address
+			self.sock.send('++addr ' + self.gpib_addr + '\n') # Set the GPIB address
 			self.sock.send('++eos 3\n') # Set end-of-send character to nothing
 			self.sock.send("++eoi 1\n") # Assert EOI with last byte to indicate end
 			self.sock.send("++read_tmo_ms 2750\n") # Set read timeout

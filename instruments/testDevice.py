@@ -6,13 +6,15 @@ import numpy, time
 ALL_VAL_TYPE = ['vtype', 'DCV', 'ACV', 'DCI', 'ACI', 'RES2W', 'RES4W', 'FREQ']
 ALL_CHANNELS = ['0', '1']
 ADDRESS = "123.456.789.123"
+ADDITIONAL_ADDRESS = "1"
 
 #==============================================================================
 
 class testDevice(abstract_instrument):
-	def __init__(self, channels,  vtype, address):
+	def __init__(self, channels,  vtype, address, additional_address):
 		self.address = address
 		self.port = 9999
+		self.additional_addr = additional_address
 		self.channels = channels
 		self.vtype = vtype
 
@@ -20,7 +22,7 @@ class testDevice(abstract_instrument):
 		return 'test_device'
 
 	def connect(self):
-		print('Connecting to device @%s:%s...' %(self.address, self.port))
+		print('Connecting to device @%s:%s - %s...' %(self.address, self.port, self.additional_addr))
 		time.sleep(1)
 		print('  --> Ok')
 		self.configure()

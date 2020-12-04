@@ -10,8 +10,11 @@ from PyQt4.QtCore import pyqtSlot
 #==============================================================================
 
 class acq_routine():
-	def __init__(self, instrument, channels, vtypes, address, samplingtime, path = os.getcwd(), fileduration = 24*3600):
-		exec('self.instrument = instruments.%s.%s(%s, %s, "%s")'%(instrument, instrument, channels, vtypes, address))
+	def __init__(self, instrument, channels, vtypes, address, additionalAddress = "", samplingtime = 1, path = os.getcwd(), fileduration = 24*3600):
+		try:
+			exec('self.instrument = instruments.%s.%s(%s, %s, "%s", "%s")'%(instrument, instrument, channels, vtypes, address, additionalAddress))
+		except:
+			exec('self.instrument = instruments.%s.%s(%s, %s, "%s")'%(instrument, instrument, channels, vtypes, address))
 		self.path = path
 		self.samplingtime = samplingtime
 		self.fileduration = fileduration
@@ -97,14 +100,17 @@ class mainGui():
 		self.wid.setLayout(self.layout)
 
 		self.comboInst = QtGui.QComboBox()
+		self.comboInst.setToolTip("List of available instruments")
 		self.layout.addWidget(self.comboInst, 0, 0)
 
 		self.address = QtGui.QLineEdit()
+		self.address.setToolTip("IP/usb address")
 		self.address.setMinimumWidth(140)
 		self.address.setMaximumWidth(140)
 		self.layout.addWidget(self.address, 0, 1)
 
 		self.samplingtime = QtGui.QDoubleSpinBox()
+		self.samplingtime.setToolTip("Sampling period (s)")
 		#self.samplingtime.setMinimumWidth(60)
 		#self.samplingtime.setMaximumWidth(60)
 		self.samplingtime.setMinimum(0.1)
@@ -114,18 +120,21 @@ class mainGui():
 		self.layout.addWidget(self.samplingtime, 0, 2)
 
 		self.startButton = QtGui.QPushButton()
+		self.startButton.setToolTip("When you're sure of your settings !")
 		self.startButton.setText('Start log')
 		self.layout.addWidget(self.startButton, 99, 0)
 		self.startButton.setEnabled(False)
 
 		self.stopButton = QtGui.QPushButton()
+		self.stopButton.setToolTip("Why ? Too much disturbances ?")
 		self.stopButton.setText('Stop log')
 		self.layout.addWidget(self.stopButton, 99, 1)
 		self.stopButton.setEnabled(False)
 
-		self.textDisplay = QtGui.QLabel()
-		self.textDisplay.setText('>>')
-		self.layout.addWidget(self.textDisplay, 99, 2)
+		self.prompt = QtGui.QLineEdit()
+		self.prompt.setToolTip("Command summary")
+		self.prompt.setText('>>')
+		self.layout.addWidget(self.prompt, 1, 2)
 
 		self.setComboInst()
 		self.updateSignal()
@@ -160,26 +169,52 @@ class mainGui():
 		defaultAddress = ''
 		channelsAviables = []
 		vtypesAviables = []
+		additionalAddress = ''
 
-		exec('channelsAviables = instruments.%s.ALL_CHANNELS'%self.comboInst.currentText())
-		exec('vtypesAviables = instruments.%s.ALL_VAL_TYPE'%self.comboInst.currentText())
-		exec('defaultAddress = instruments.%s.ADDRESS'%self.comboInst.currentText())
+		try:
+			exec('channelsAviables = instruments.%s.ALL_CHANNELS'%self.comboInst.currentText())
+		except:
+			pass
+		try:
+			exec('vtypesAviables = instruments.%s.ALL_VAL_TYPE'%self.comboInst.currentText())
+		except:
+			pass
+		try:
+			exec('defaultAddress = instruments.%s.ADDRESS'%self.comboInst.currentText())
+		except:
+			pass
+		try:
+			exec('additionalAddress = instruments.%s.ADDITIONAL_ADDRESS'%self.comboInst.currentText())
+		except:
+			pass
 
 		self.address.setText(defaultAddress)
+
+		if additionalAddress != '':
+			self.addAddress = QtGui.QLineEdit()
+			self.addAddress.setToolTip("GPIB/...")
+			self.addAddress.setMinimumWidth(140)
+			self.addAddress.setMaximumWidth(140)
+			self.layout.addWidget(self.addAddress, 1, 1)
+
+			self.addAddress.setText(additionalAddress)
+			self.addAddress.textChanged.connect(self.infoSignal)
 
 		self.checkBoxChannels = [None]*len(channelsAviables)
 		self.chListVtypes = [None]*len(self.checkBoxChannels)
 
 		for i in range(len(self.checkBoxChannels)):
 			self.checkBoxChannels[i] = QtGui.QCheckBox()
+			self.checkBoxChannels[i].setToolTip("Channel %s"%channelsAviables[i])
 			self.checkBoxChannels[i].setText(channelsAviables[i])
 			self.checkBoxChannels[i].setChecked(False)
 			self.chListVtypes[i] = QtGui.QListWidget()
+			self.chListVtypes[i].setToolTip("Select type of measure")
 			for vtype in vtypesAviables:
 				self.chListVtypes[i].addItem(vtype)
 			self.chListVtypes[i].setCurrentRow(0)
-			self.layout.addWidget(self.checkBoxChannels[i], i+3, 1)
-			self.layout.addWidget(self.chListVtypes[i], i+3, 2)
+			self.layout.addWidget(self.checkBoxChannels[i], i+10, 1)
+			self.layout.addWidget(self.chListVtypes[i], i+10, 2)
 			self.checkBoxChannels[i].stateChanged.connect(self.infoSignal)
 			self.chListVtypes[i].currentItemChanged.connect(self.infoSignal)
 
@@ -192,6 +227,10 @@ class mainGui():
 	def infoSignal(self):
 		self.instToLog = self.comboInst.currentText()
 		self.addressToLog = self.address.text()
+		try:
+			self.additional_address = self.addAddress.text()
+		except:
+			pass
 		self.chToLog = []
 		self.vTypeToLog = []
 		self.ts = self.samplingtime.value()
@@ -212,9 +251,32 @@ class mainGui():
 		else:
 			self.startButton.setEnabled(True)
 
-		self.textDisplay.setText('>> %s@%s - %s - %s - %d'%(self.instToLog, self.addressToLog, self.chToLog, self.vTypeToLog, self.ts))
+		try:
+			promptStr = ">> %s@%s - %s - %s - %s - %d"%(self.instToLog,
+				self.addressToLog,
+				self.additional_address,
+				self.chToLog,
+				self.vTypeToLog,
+				self.ts)
+			self.myLog = acq_routine(instrument = self.instToLog,
+				channels = self.chToLog,
+				vtypes = self.vTypeToLog,
+				address = self.addressToLog,
+				additionalAddress = self.additional_address,
+				samplingtime = self.ts)
+		except:
+			promptStr = ">> %s@%s - %s - %s - %d"%(self.instToLog,
+				self.addressToLog,
+				self.chToLog,
+				self.vTypeToLog,
+				self.ts)
+			self.myLog = acq_routine(instrument = self.instToLog,
+				channels = self.chToLog,
+				vtypes = self.vTypeToLog,
+				address = self.addressToLog,
+				samplingtime = self.ts)
 
-		self.myLog = acq_routine(self.instToLog, self.chToLog, self.vTypeToLog, self.addressToLog, self.ts)
+		self.prompt.setText(promptStr)
 
 	@pyqtSlot()
 	def startLog(self):

@@ -12,8 +12,10 @@ from PyQt4.QtCore import pyqtSlot
 class acq_routine():
 	def __init__(self, instrument, channels, vtypes, address, additionalAddress = "", samplingtime = 1, path = os.getcwd(), fileduration = 24*3600):
 		try:
+			print('self.instrument = instruments.%s.%s(%s, %s, "%s", "%s")'%(instrument, instrument, channels, vtypes, address, additionalAddress))
 			exec('self.instrument = instruments.%s.%s(%s, %s, "%s", "%s")'%(instrument, instrument, channels, vtypes, address, additionalAddress))
 		except:
+			print('self.instrument = instruments.%s.%s(%s, %s, "%s")'%(instrument, instrument, channels, vtypes, address))
 			exec('self.instrument = instruments.%s.%s(%s, %s, "%s")'%(instrument, instrument, channels, vtypes, address))
 		self.path = path
 		self.samplingtime = samplingtime
@@ -105,19 +107,19 @@ class mainGui():
 
 		self.address = QtGui.QLineEdit()
 		self.address.setToolTip("IP/usb address")
-		self.address.setMinimumWidth(140)
-		self.address.setMaximumWidth(140)
-		self.layout.addWidget(self.address, 0, 1)
+		self.address.setMinimumWidth(240)
+		self.address.setMaximumWidth(240)
+		self.layout.addWidget(self.address, 1, 0)
 
 		self.samplingtime = QtGui.QDoubleSpinBox()
 		self.samplingtime.setToolTip("Sampling period (s)")
-		#self.samplingtime.setMinimumWidth(60)
-		#self.samplingtime.setMaximumWidth(60)
+		self.samplingtime.setMinimumWidth(100)
+		self.samplingtime.setMaximumWidth(100)
 		self.samplingtime.setMinimum(0.1)
 		self.samplingtime.setMaximum(1000)
 		self.samplingtime.setSingleStep(0.1)
 		self.samplingtime.setValue(1)
-		self.layout.addWidget(self.samplingtime, 0, 2)
+		self.layout.addWidget(self.samplingtime, 0, 1)
 
 		self.startButton = QtGui.QPushButton()
 		self.startButton.setToolTip("When you're sure of your settings !")
@@ -131,10 +133,10 @@ class mainGui():
 		self.layout.addWidget(self.stopButton, 99, 1)
 		self.stopButton.setEnabled(False)
 
-		self.prompt = QtGui.QLineEdit()
+		self.prompt = QtGui.QLabel()
 		self.prompt.setToolTip("Command summary")
 		self.prompt.setText('>>')
-		self.layout.addWidget(self.prompt, 1, 2)
+		self.layout.addWidget(self.prompt, 99, 2)
 
 		self.setComboInst()
 		self.updateSignal()
@@ -163,7 +165,7 @@ class mainGui():
 
 	@pyqtSlot()
 	def updateSignal(self):
-		for i in reversed(range(5, self.layout.count())):
+		for i in reversed(list(range(5, self.layout.count()))):
 			self.layout.itemAt(i).widget().setParent(None)
 
 		defaultAddress = ''

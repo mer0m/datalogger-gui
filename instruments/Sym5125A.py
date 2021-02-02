@@ -18,23 +18,21 @@ class Sym5125A(abstract_instrument):
 		self.vtypes = vtypes
 
 	def model(self):
-		#self.send("*IDN?")
-		#return self.read()
 		return "Sym5125A"
 
 	def connect(self):
 		print('Connecting to device @%s...' %(self.address))
 		self.tn = telnetlib.Telnet(self.address, '1298')
-		#time.sleep(1)
 		print('  --> Ok')
 		print(self.model())
 		self.configure()
 
 	def configure(self):
+		print('No channel to configure')
 		pass
 
 	def getValue(self):
-		for i in range(1000):
+		for i in list(range(1000)):
 			mes = self.tn.read_until('\n').replace('\r\n','')
 		return mes + '\n'
 

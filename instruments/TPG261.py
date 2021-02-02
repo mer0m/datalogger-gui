@@ -26,6 +26,7 @@ class TPG261(abstract_instrument):
 		self.configure()
 
 	def configure(self):
+		print('No channel to configure')
 		pass
 
 	def getValue(self):
@@ -53,7 +54,6 @@ class MaxiGauge (object):
 			self.connection = serial.Serial(serialPort, baudrate=baud, timeout=0.2)
 		except serial.serialutil.SerialException as se:
 			raise MaxiGaugeError(se)
-		#self.send(C['ETX']) ### We might reset the connection first, but it doesn't really matter:
 
 	def checkDevice(self):
 		message = "The Display Contrast is currently set to %d (out of 20).\n" % self.displayContrast()
@@ -75,7 +75,7 @@ class MaxiGauge (object):
 		else: return int(self.send('DCC,%d' % (newContrast,) ,1)[0])
 
 	def pressures(self):
-		return [self.pressure(i+1) for i in range(1)]
+		return [self.pressure(i+1) for i in list(range(1))]
 
 	def pressure(self, sensor):
 		if sensor < 1 or sensor >6: raise MaxiGaugeError('Sensor can only be between 1 and 6. You choose ' + str(sensor))
@@ -94,11 +94,9 @@ class MaxiGauge (object):
 	def send(self, mnemonic, numEnquiries = 0):
 		self.connection.flushInput()
 		self.write(mnemonic+LINE_TERMINATION)
-		#if mnemonic != C['ETX']: self.read()
-		#self.read()
 		self.getACQorNAK()
 		response = []
-		for i in range(numEnquiries):
+		for i in list(range(numEnquiries)):
 			self.enquire()
 			response.append(self.read())
 		return response
@@ -123,23 +121,19 @@ class MaxiGauge (object):
 	def getACQorNAK(self):
 		returncode = self.connection.readline()
 		self.debugMessage(returncode)
-		## The following is usually expected but our MaxiGauge controller sometimes forgets this parameter... That seems to be a bug with the DCC command.
-		#if len(returncode)<3: raise MaxiGaugeError('Only received a line termination from MaxiGauge. Was expecting ACQ or NAK.')
 		if len(returncode)<3: self.debugMessage('Only received a line termination from MaxiGauge. Was expecting ACQ or NAK.')
 		if len(returncode)>2 and returncode[-3] == C['NAK']:
 			self.enquire()
 			returnedError = self.read()
 			error = str(returnedError).split(',' , 1)
-			print repr(error)
+			print(repr(error))
 			errmsg = { 'System Error': ERR_CODES[0][int(error[0])] , 'Gauge Error': ERR_CODES[1][int(error[1])] }
 			raise MaxiGaugeNAK(errmsg)
-		#if len(returncode)>2 and returncode[-3] != C['ACQ']: raise MaxiGaugeError('Expecting ACQ or NAK from MaxiGauge but neither were sent.')
 		if len(returncode)>2 and returncode[-3] != C['ACQ']: self.debugMessage('Expecting ACQ or NAK from MaxiGauge but neither were sent.')
 		# if no exception raised so far, the interface is just fine:
 		return returncode[:-(len(LINE_TERMINATION)+1)]
 
 	def disconnect(self):
-		#self.send(C['ETX'])
 		if hasattr(self, 'connection') and self.connection: self.connection.close()
 
 	def __del__(self):
@@ -147,7 +141,7 @@ class MaxiGauge (object):
 
 class PressureReading(object):
 	def __init__(self, id, status, pressure):
-		if int(id) not in range(1,7): raise MaxiGaugeError('Pressure Gauge ID must be between 1-6')
+		if int(id) not in list(range(1,7)): raise MaxiGaugeError('Pressure Gauge ID must be between 1-6')
 		self.id = int(id)
 		if int(status) not in PRESSURE_READING_STATUS.keys(): raise MaxiGaugeError('The Pressure Status must be in the range %s' % PRESSURE_READING_STATUS.keys())
 		self.status = int(status)

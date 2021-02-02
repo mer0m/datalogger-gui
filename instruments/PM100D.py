@@ -18,8 +18,6 @@ class PM100D(abstract_instrument):
 		self.vtypes = vtypes
 
 	def model(self):
-		#self.send("*IDN?")
-		#return self.read()
 		return "PM100D"
 
 	def connect(self):
@@ -30,6 +28,7 @@ class PM100D(abstract_instrument):
 		self.configure()
 
 	def configure(self):
+		print('No channel to configure')
 		pass
 
 	def getValue(self):

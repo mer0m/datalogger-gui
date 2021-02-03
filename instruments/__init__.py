@@ -4,6 +4,6 @@ from os.path import dirname
 for module in listdir(dirname(__file__)):
 	if module == '__init__.py' or module == 'abstract_instrument.py' or module[-3:] != '.py':
 		continue
-	__import__(module[:-3], locals(), globals())
+	__import__(module[:-3], locals(), globals(), level=1)
 
 del module, listdir, dirname

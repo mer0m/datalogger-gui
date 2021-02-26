@@ -38,6 +38,7 @@ class HP53132A(abstract_instrument):
 	def configure(self):
 		self.send('*RST')
 
+		self.send(':INP:IMP 50')
 		self.send(':FUNC "FREQ 1"')
 		self.send(':FREQ:ARM:STAR:SOUR IMM')
 		self.send(':FREQ:ARM:STOP:SOUR TIM')

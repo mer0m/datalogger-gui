@@ -1,22 +1,18 @@
-from sys import version_info
-if version_info.major == 3:
-    from instruments.abstract_instrument import abstract_instrument
-else:
-    from abstract_instrument import abstract_instrument
+from abstract_instrument import abstract_instrument
 import socket
 
 #==============================================================================
 
-ALL_VAL_TYPE = ['FREQ']  #, 'PERIOD']
+ALL_VAL_TYPE = ['DCV', 'ACV', 'DCI', 'ACI', 'RES']  #, 'PERIOD']
 ALL_CHANNELS = ['1'] #, '2']
 
-ADDRESS = "192.168.0.52"
-ADDITIONAL_ADDRESS = "12"
-CONF_VAL_TYPE = ['CONF:FREQ'] #, 'CONF:PERIOD']
+ADDRESS = "10.1.28.59"
+ADDITIONAL_ADDRESS = "7"
+CONF_VAL_TYPE = ['F0DX', 'F1DX', 'F3DX', 'F4DX', 'F2DX'] #, 'CONF:PERIOD']
 
 #==============================================================================
 
-class HP53132A(abstract_instrument):
+class KEIT196(abstract_instrument):
 	def __init__(self, channels, vtypes, address, additional_address):
 		self.address = address
 		self.port = 1234
@@ -25,7 +21,9 @@ class HP53132A(abstract_instrument):
 		self.vtypes = vtypes
 
 	def model(self):
-		return "HP53132A"
+		#self.send("*IDN?")
+		#return self.read()
+		return "KEIT196"
 
 	def connect(self):
 		print('Connecting to device @%s:%s GPIB:%s...' %(self.address, self.port, self.gpib_addr))
@@ -41,18 +39,17 @@ class HP53132A(abstract_instrument):
 
 	def configure(self):
 		self.send('*RST')
-
-		self.send(':INP:IMP 50')
-		self.send(':FUNC "FREQ 1"')
-		self.send(':FREQ:ARM:STAR:SOUR IMM')
-		self.send(':FREQ:ARM:STOP:SOUR TIM')
-		self.send(':FREQ:ARM:STOP:TIM 1')
-		self.send(':ROSC:SOUR EXT')
-		self.send(':ROSC:EXT:CHECK OFF')
-		self.send(':INIT:CONT ON')
+		#self.send('F0DX')
+		for ch in self.channels:
+			self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])])
+		self.send('YX')
+		self.send('G1DX')
+		self.send('R0DX')
+		self.send('W100') #delay in milliseconds 0ms -> 6000ms
 
 	def getValue(self):
-		self.send('FETC?')
+		#self.send('FETC?')
+		#self.send('READ:FREQ?')
 		return self.read()
 
 	def read(self):
@@ -65,15 +62,20 @@ class HP53132A(abstract_instrument):
 				ans = self.sock.recv(1)
 				nb_data_list.append(ans) # Return the number of data
 			list_size = len(nb_data_list)
-			for j in list(range(0, list_size)):
+			for j in range (0, list_size):
 				nb_data = nb_data+nb_data_list[j]
 			return nb_data
 		except socket.timeout:
-			print("Socket timeout error when reading.")
+			print "Socket timeout error when reading."
 			raise
+		self.send('*RST')
+		self.send('YX')
+		self.send('G1DX')
+		self.send('R0DX')
+		self.send('W100')
 
 	def disconnect(self):
-		self.send('*RST')
+		#self.send('*END')
 		self.sock.close()
 
 	def send(self, command):
@@ -90,11 +92,11 @@ class HP53132A(abstract_instrument):
 								# "Query Unterminated" errors
 
 		except self.socket.timeout:
-			print("Socket timeout")
+			print "Socket timeout"
 			raise
 		except self.socket.error as er:
-			print("Socket error: %s"%er)
+			print "Socket error: " + str(er)
 			raise
 		except Exception as er:
-			print("Unexpected error: %s"%er)
+			print "Unexpected error: " + str(er)
 			raise

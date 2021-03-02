@@ -137,7 +137,7 @@ class mainGui():
 		self.w.setStatusBar(self.prompt)
 
 		self.setComboInst()
-		self.updateSignal()
+		self.makeCurrentInstrumentGui()
 
 	def setComboInst(self):
 		for name, obj in inspect.getmembers(instruments):
@@ -145,7 +145,7 @@ class mainGui():
 				self.comboInst.addItem(name)
 
 	def setSignalsSlots(self):
-		self.comboInst.currentIndexChanged.connect(self.updateSignal)
+		self.comboInst.currentIndexChanged.connect(self.makeCurrentInstrumentGui)
 		self.startButton.clicked.connect(self.startLog)
 		self.stopButton.clicked.connect(self.stopLog)
 
@@ -162,7 +162,7 @@ class mainGui():
 		print('Done')
 
 	@pyqtSlot()
-	def updateSignal(self):
+	def makeCurrentInstrumentGui(self):
 		for i in reversed(list(range(5, self.layout.count()))):
 			self.layout.itemAt(i).widget().setParent(None)
 
@@ -198,7 +198,12 @@ class mainGui():
 			self.layout.addWidget(self.addAddress, 1, 1)
 
 			self.addAddress.setText(additionalAddress)
-			self.addAddress.textChanged.connect(self.infoSignal)
+			self.addAddress.textChanged.connect(self.setCurrentInstConf)
+		else:
+			try:
+				del(self.addAddress)
+			except:
+				pass
 
 		self.checkBoxChannels = [None]*len(channelsAviables)
 		self.chListVtypes = [None]*len(self.checkBoxChannels)
@@ -215,22 +220,25 @@ class mainGui():
 			self.chListVtypes[i].setCurrentRow(0)
 			self.layout.addWidget(self.checkBoxChannels[i], i+10, 1)
 			self.layout.addWidget(self.chListVtypes[i], i+10, 2)
-			self.checkBoxChannels[i].stateChanged.connect(self.infoSignal)
-			self.chListVtypes[i].currentItemChanged.connect(self.infoSignal)
+			self.checkBoxChannels[i].stateChanged.connect(self.setCurrentInstConf)
+			self.chListVtypes[i].currentItemChanged.connect(self.setCurrentInstConf)
 
-		self.address.textChanged.connect(self.infoSignal)
-		self.samplingtime.valueChanged.connect(self.infoSignal)
+		self.address.textChanged.connect(self.setCurrentInstConf)
+		self.samplingtime.valueChanged.connect(self.setCurrentInstConf)
 
-		self.infoSignal()
+		self.setCurrentInstConf()
 
 	@pyqtSlot()
-	def infoSignal(self):
+	def setCurrentInstConf(self):
 		self.instToLog = self.comboInst.currentText()
 		self.addressToLog = self.address.text()
 		try:
 			self.additional_address = self.addAddress.text()
 		except:
-			pass
+			try:
+				del(self.additional_address)
+			except:
+				pass
 		self.chToLog = []
 		self.vTypeToLog = []
 		self.ts = self.samplingtime.value()
@@ -252,7 +260,7 @@ class mainGui():
 			self.startButton.setEnabled(True)
 
 		try:
-			promptStr = ">> %s@%s - %s - %s - %s - %d"%(self.instToLog,
+			promptStr = ">> %s@%s:%s - %s - %s - %d"%(self.instToLog,
 				self.addressToLog,
 				self.additional_address,
 				self.chToLog,

@@ -1,11 +1,14 @@
+from sys import version_info
+if version_info.major == 3:
+    from instruments.abstract_instrument import abstract_instrument
+else:
+    from abstract_instrument import abstract_instrument
 import os
-from abstract_instrument import abstract_instrument
-import socket
 
 #==============================================================================
 
 ALL_VAL_TYPE = ['DCV', 'ACV', 'DCI', 'ACI', 'RES']
-ALL_CHANNELS = ['1'] #, '2']
+ALL_CHANNELS = ['1']
 
 ADDRESS = "/dev/usbtmc0"
 CONF_VAL_TYPE_QUER = ['MEAS:VOLT:DC?', 'MEAS:VOLT:AC?', 'MEAS:CURR:DC?', 'MEAS:CURR:AC', 'MEAS:RES?', 'MEAS:TEMP?']
@@ -15,15 +18,11 @@ CONF_VAL_TYPE_QUER = ['MEAS:VOLT:DC?', 'MEAS:VOLT:AC?', 'MEAS:CURR:DC?', 'MEAS:C
 class KEIT2100(abstract_instrument):
 	def __init__(self, channels, vtypes, address, additional_address):
 		self.address = address
-		#self.port = 1234
-		#self.gpib_addr = additional_address
 		self.channels = channels
 		self.vtypes = vtypes
 
 	def model(self):
-		#self.send("*IDN?")
-		#return self.read()
-		return "KEIT2100"
+		return 'KEIT2100'
 
 	def connect(self):
 		print('Connecting to device @%s...' %(self.address))

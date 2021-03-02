@@ -1,8 +1,8 @@
 from sys import version_info
 if version_info.major == 3:
-    from instruments.abstract_instrument import abstract_instrument
+	from instruments.abstract_instrument import abstract_instrument
 else:
-    from abstract_instrument import abstract_instrument
+	from abstract_instrument import abstract_instrument
 import socket
 
 #==============================================================================
@@ -25,7 +25,7 @@ class HP53132A(abstract_instrument):
 		self.vtypes = vtypes
 
 	def model(self):
-		return "HP53132A"
+		return 'HP53132A'
 
 	def connect(self):
 		print('Connecting to device @%s:%s GPIB:%s...' %(self.address, self.port, self.gpib_addr))

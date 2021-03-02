@@ -1,14 +1,18 @@
-from abstract_instrument import abstract_instrument
+from sys import version_info
+if version_info.major == 3:
+	from instruments.abstract_instrument import abstract_instrument
+else:
+	from abstract_instrument import abstract_instrument
 import socket
 
 #==============================================================================
 
-ALL_VAL_TYPE = ['DCV', 'ACV', 'DCI', 'ACI', 'RES']  #, 'PERIOD']
-ALL_CHANNELS = ['1'] #, '2']
+ALL_VAL_TYPE = ['DCV', 'ACV', 'DCI', 'ACI', 'RES']
+ALL_CHANNELS = ['1']
 
 ADDRESS = "10.1.28.59"
 ADDITIONAL_ADDRESS = "7"
-CONF_VAL_TYPE = ['F0DX', 'F1DX', 'F3DX', 'F4DX', 'F2DX'] #, 'CONF:PERIOD']
+CONF_VAL_TYPE = ['F0DX', 'F1DX', 'F3DX', 'F4DX', 'F2DX']
 
 #==============================================================================
 
@@ -21,9 +25,7 @@ class KEIT196(abstract_instrument):
 		self.vtypes = vtypes
 
 	def model(self):
-		#self.send("*IDN?")
-		#return self.read()
-		return "KEIT196"
+		return 'KEIT196'
 
 	def connect(self):
 		print('Connecting to device @%s:%s GPIB:%s...' %(self.address, self.port, self.gpib_addr))
@@ -39,7 +41,6 @@ class KEIT196(abstract_instrument):
 
 	def configure(self):
 		self.send('*RST')
-		#self.send('F0DX')
 		for ch in self.channels:
 			self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])])
 		self.send('YX')
@@ -66,16 +67,10 @@ class KEIT196(abstract_instrument):
 				nb_data = nb_data+nb_data_list[j]
 			return nb_data
 		except socket.timeout:
-			print "Socket timeout error when reading."
+			print("Socket timeout error when reading.")
 			raise
-		self.send('*RST')
-		self.send('YX')
-		self.send('G1DX')
-		self.send('R0DX')
-		self.send('W100')
 
 	def disconnect(self):
-		#self.send('*END')
 		self.sock.close()
 
 	def send(self, command):
@@ -89,14 +84,13 @@ class KEIT196(abstract_instrument):
 			self.sock.send("++eoi 1\n") # Assert EOI with last byte to indicate end
 			self.sock.send("++read_tmo_ms 2750\n") # Set read timeout
 			self.sock.send("++auto 0\n") # Turn off read-after-write to avoid
-								# "Query Unterminated" errors
 
 		except self.socket.timeout:
-			print "Socket timeout"
+			print("Socket timeout")
 			raise
 		except self.socket.error as er:
-			print "Socket error: " + str(er)
+			print("Socket error: %s"%er)
 			raise
 		except Exception as er:
-			print "Unexpected error: " + str(er)
+			print("Unexpected error: %s"%er)
 			raise

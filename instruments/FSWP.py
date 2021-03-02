@@ -16,8 +16,6 @@ CONF_VAL_TYPE = ['CALC:MARKi:Y?']
 #==============================================================================
 
 class FSWP(abstract_instrument):
-	
-
 	def __init__(self, channels, vtypes, address):
 		self.address = address
 		self.port = 5025

@@ -1,4 +1,8 @@
-from abstract_instrument import abstract_instrument
+from sys import version_info
+if version_info.major == 3:
+    from instruments.abstract_instrument import abstract_instrument
+else:
+    from abstract_instrument import abstract_instrument
 import telnetlib, time
 
 #==============================================================================

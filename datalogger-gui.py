@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # -*- coding: utf-8 -*-
 
@@ -12,10 +12,8 @@ from PyQt4.QtCore import pyqtSlot
 class acq_routine():
 	def __init__(self, instrument, channels, vtypes, address, additionalAddress = "", samplingtime = 1, path = os.getcwd(), fileduration = 24*3600):
 		try:
-			print('self.instrument = instruments.%s.%s(%s, %s, "%s", "%s")'%(instrument, instrument, channels, vtypes, address, additionalAddress))
 			exec('self.instrument = instruments.%s.%s(%s, %s, "%s", "%s")'%(instrument, instrument, channels, vtypes, address, additionalAddress))
 		except:
-			print('self.instrument = instruments.%s.%s(%s, %s, "%s")'%(instrument, instrument, channels, vtypes, address))
 			exec('self.instrument = instruments.%s.%s(%s, %s, "%s")'%(instrument, instrument, channels, vtypes, address))
 		self.path = path
 		self.samplingtime = samplingtime
@@ -44,7 +42,7 @@ class acq_routine():
 		self.t0 = time.time()
 		self.filename = time.strftime("%Y%m%d-%H%M%S", time.gmtime(self.t0)) + '-' + self.instrument.model() + '.dat'
 		self.makeTree()
-		self.data_file = open(self.filename, 'wr', 0)
+		self.data_file = os.open(self.filename, os.O_RDWR|os.O_CREAT)
 
 	def start(self):
 		tic = time.time()
@@ -55,7 +53,7 @@ class acq_routine():
 			self.t0 = time.time()
 			self.filename = time.strftime("%Y%m%d-%H%M%S", time.gmtime(self.t0)) + '-' + self.instrument.model() + '.dat'
 			self.makeTree()
-			self.data_file = open(self.filename, 'wr', 0)
+			self.data_file = os.open(self.filename, os.O_RDWR|os.O_CREAT)
 
 		#epoch time
 		epoch = time.time()
@@ -70,7 +68,7 @@ class acq_routine():
 
 		string = "%f\t%f\t%s" % (epoch, mjd, meas)
 		string = string.replace("\t\t", "\t")
-		self.data_file.write(string) # Write in a file
+		os.write(self.data_file, str.encode(string)) # Write in a file
 		print(string)
 
 		self.thread = threading.Timer(self.samplingtime - (time.time() - tic), self.start)
@@ -79,7 +77,7 @@ class acq_routine():
 	def stop(self):
 		self.thread.cancel()
 		self.instrument.disconnect()
-		self.data_file.close()
+		os.close(self.data_file)
 
 #==============================================================================
 #==============================================================================
@@ -133,10 +131,10 @@ class mainGui():
 		self.layout.addWidget(self.stopButton, 99, 1)
 		self.stopButton.setEnabled(False)
 
-		self.prompt = QtGui.QLabel()
+		self.prompt = QtGui.QStatusBar()
 		self.prompt.setToolTip("Command summary")
-		self.prompt.setText('>>')
-		self.layout.addWidget(self.prompt, 99, 2)
+		self.prompt.showMessage('>>')
+		self.w.setStatusBar(self.prompt)
 
 		self.setComboInst()
 		self.updateSignal()
@@ -174,19 +172,19 @@ class mainGui():
 		additionalAddress = ''
 
 		try:
-			exec('channelsAviables = instruments.%s.ALL_CHANNELS'%self.comboInst.currentText())
+			channelsAviables = eval('instruments.%s.ALL_CHANNELS'%self.comboInst.currentText())
 		except:
 			pass
 		try:
-			exec('vtypesAviables = instruments.%s.ALL_VAL_TYPE'%self.comboInst.currentText())
+			vtypesAviables = eval('instruments.%s.ALL_VAL_TYPE'%self.comboInst.currentText())
 		except:
 			pass
 		try:
-			exec('defaultAddress = instruments.%s.ADDRESS'%self.comboInst.currentText())
+			defaultAddress = eval('instruments.%s.ADDRESS'%self.comboInst.currentText())
 		except:
 			pass
 		try:
-			exec('additionalAddress = instruments.%s.ADDITIONAL_ADDRESS'%self.comboInst.currentText())
+			additionalAddress = eval('instruments.%s.ADDITIONAL_ADDRESS'%self.comboInst.currentText())
 		except:
 			pass
 
@@ -278,7 +276,7 @@ class mainGui():
 				address = self.addressToLog,
 				samplingtime = self.ts)
 
-		self.prompt.setText(promptStr)
+		self.prompt.showMessage(promptStr)
 
 	@pyqtSlot()
 	def startLog(self):

@@ -10,7 +10,7 @@ from PyQt4.QtCore import pyqtSlot
 #==============================================================================
 
 class acq_routine():
-	def __init__(self, instrument, channels, vtypes, address, additionalAddress = "", samplingtime = 1, path = os.getcwd(), fileduration = 24*3600):
+	def __init__(self, instrument, channels, vtypes, address, additionalAddress = "", samplingtime = 1, path = os.getcwd(), fileduration = 10, footer = ""):
 		try:
 			exec('self.instrument = instruments.%s.%s(%s, %s, "%s", "%s")'%(instrument, instrument, channels, vtypes, address, additionalAddress))
 		except:
@@ -18,6 +18,7 @@ class acq_routine():
 		self.path = path
 		self.samplingtime = samplingtime
 		self.fileduration = fileduration
+		self.footer = footer
 
 	def makeTree(self):
 		try:
@@ -36,11 +37,12 @@ class acq_routine():
 				os.mkdir(month)
 				os.chdir(self.path + '/' + year + '/' + month)
 
-	def connect(self):
-		self.instrument.connect()
+	def connect(self, alreadyConnected = False):
+		if alreadyConnected == False:
+			self.instrument.connect()
 
 		self.t0 = time.time()
-		self.filename = time.strftime("%Y%m%d-%H%M%S", time.gmtime(self.t0)) + '-' + self.instrument.model() + '.dat'
+		self.filename = "%s%s-%s.dat"%(time.strftime("%Y%m%d-%H%M%S", time.gmtime(self.t0)), self.footer, self.instrument.model())
 		self.makeTree()
 		self.data_file = os.open(self.filename, os.O_RDWR|os.O_CREAT)
 
@@ -49,11 +51,7 @@ class acq_routine():
 
 		if (time.time() - self.t0 >= self.fileduration) & (self.fileduration >0 ):
 			self.data_file.close()
-
-			self.t0 = time.time()
-			self.filename = time.strftime("%Y%m%d-%H%M%S", time.gmtime(self.t0)) + '-' + self.instrument.model() + '.dat'
-			self.makeTree()
-			self.data_file = os.open(self.filename, os.O_RDWR|os.O_CREAT)
+			self.connect(True)
 
 		#epoch time
 		epoch = time.time()
@@ -104,7 +102,7 @@ class mainGui():
 		self.layout.addWidget(self.comboInst, 0, 0)
 
 		self.address = QtGui.QLineEdit()
-		self.address.setToolTip("IP/usb address")
+		self.address.setToolTip("IP/USB address")
 		self.address.setMinimumWidth(240)
 		self.address.setMaximumWidth(240)
 		self.layout.addWidget(self.address, 1, 0)
@@ -119,17 +117,34 @@ class mainGui():
 		self.samplingtime.setValue(1)
 		self.layout.addWidget(self.samplingtime, 0, 1)
 
+		self.footer = QtGui.QLineEdit()
+		self.footer.setText("footer")
+		self.footer.setToolTip("Filename footer")
+		self.footer.setMinimumWidth(240)
+		self.footer.setMaximumWidth(240)
+		self.layout.addWidget(self.footer, 2, 0)
+
+		self.checkBoxFooter = QtGui.QCheckBox()
+		self.checkBoxFooter.setToolTip("Use custom filename footer")
+		self.checkBoxFooter.setText("Footer")
+		self.checkBoxFooter.setChecked(False)
+		self.layout.addWidget(self.checkBoxFooter, 2, 1)
+
+		self.startStopLayout = QtGui.QHBoxLayout()
+
 		self.startButton = QtGui.QPushButton()
 		self.startButton.setToolTip("When you're sure of your settings !")
 		self.startButton.setText('Start log')
-		self.layout.addWidget(self.startButton, 99, 0)
+		self.startStopLayout.addWidget(self.startButton)
 		self.startButton.setEnabled(False)
 
 		self.stopButton = QtGui.QPushButton()
 		self.stopButton.setToolTip("Why ? Too much disturbances ?")
 		self.stopButton.setText('Stop log')
-		self.layout.addWidget(self.stopButton, 99, 1)
+		self.startStopLayout.addWidget(self.stopButton)
 		self.stopButton.setEnabled(False)
+
+		self.layout.addLayout(self.startStopLayout, 0, 2)
 
 		self.prompt = QtGui.QStatusBar()
 		self.prompt.setToolTip("Command summary")
@@ -164,7 +179,10 @@ class mainGui():
 	@pyqtSlot()
 	def makeCurrentInstrumentGui(self):
 		for i in reversed(list(range(5, self.layout.count()))):
-			self.layout.itemAt(i).widget().setParent(None)
+			try:
+				self.layout.itemAt(i).widget().setParent(None)
+			except:
+				pass
 
 		defaultAddress = ''
 		channelsAviables = []
@@ -192,9 +210,9 @@ class mainGui():
 
 		if additionalAddress != '':
 			self.addAddress = QtGui.QLineEdit()
-			self.addAddress.setToolTip("GPIB/...")
-			self.addAddress.setMinimumWidth(140)
-			self.addAddress.setMaximumWidth(140)
+			self.addAddress.setToolTip("GPIB address/...")
+			self.addAddress.setMinimumWidth(100)
+			self.addAddress.setMaximumWidth(100)
 			self.layout.addWidget(self.addAddress, 1, 1)
 
 			self.addAddress.setText(additionalAddress)
@@ -225,6 +243,8 @@ class mainGui():
 
 		self.address.textChanged.connect(self.setCurrentInstConf)
 		self.samplingtime.valueChanged.connect(self.setCurrentInstConf)
+		self.checkBoxFooter.stateChanged.connect(self.setCurrentInstConf)
+		self.footer.textChanged.connect(self.setCurrentInstConf)
 
 		self.setCurrentInstConf()
 
@@ -242,6 +262,12 @@ class mainGui():
 		self.chToLog = []
 		self.vTypeToLog = []
 		self.ts = self.samplingtime.value()
+		if self.checkBoxFooter.isChecked():
+			self.filenameFooter = "_%s"%self.footer.text()
+			self.footer.setEnabled(True)
+		else:
+			self.filenameFooter = ""
+			self.footer.setEnabled(False)
 
 		for i in range(len(self.checkBoxChannels)):
 			if self.checkBoxChannels[i].isChecked():
@@ -260,7 +286,8 @@ class mainGui():
 			self.startButton.setEnabled(True)
 
 		try:
-			promptStr = ">> %s@%s:%s - %s - %s - %d"%(self.instToLog,
+			promptStr = ">> %s%s@%s:%s - %s - %s - %d"%(self.instToLog,
+				self.filenameFooter,
 				self.addressToLog,
 				self.additional_address,
 				self.chToLog,
@@ -273,7 +300,8 @@ class mainGui():
 				additionalAddress = self.additional_address,
 				samplingtime = self.ts)
 		except:
-			promptStr = ">> %s@%s - %s - %s - %d"%(self.instToLog,
+			promptStr = ">> %s%s@%s - %s - %s - %d"%(self.instToLog,
+				self.filenameFooter,
 				self.addressToLog,
 				self.chToLog,
 				self.vTypeToLog,

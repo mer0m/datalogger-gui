@@ -10,7 +10,7 @@ from PyQt4.QtCore import pyqtSlot
 #==============================================================================
 
 class acq_routine():
-	def __init__(self, instrument, channels, vtypes, address, additionalAddress = "", samplingtime = 1, path = os.getcwd(), fileduration = 10, footer = ""):
+	def __init__(self, instrument, channels, vtypes, address, additionalAddress = "", samplingtime = 1, path = os.getcwd(), fileduration = 24*3600, footer = ""):
 		try:
 			exec('self.instrument = instruments.%s.%s(%s, %s, "%s", "%s")'%(instrument, instrument, channels, vtypes, address, additionalAddress))
 		except:
@@ -42,7 +42,7 @@ class acq_routine():
 			self.instrument.connect()
 
 		self.t0 = time.time()
-		self.filename = "%s%s-%s.dat"%(time.strftime("%Y%m%d-%H%M%S", time.gmtime(self.t0)), self.footer, self.instrument.model())
+		self.filename = "%s-%s%s.dat"%(time.strftime("%Y%m%d-%H%M%S", time.gmtime(self.t0)), self.instrument.model(), self.footer)
 		self.makeTree()
 		self.data_file = os.open(self.filename, os.O_RDWR|os.O_CREAT)
 
@@ -50,7 +50,7 @@ class acq_routine():
 		tic = time.time()
 
 		if (time.time() - self.t0 >= self.fileduration) & (self.fileduration >0 ):
-			self.data_file.close()
+			os.close(self.data_file)
 			self.connect(True)
 
 		#epoch time
@@ -298,7 +298,8 @@ class mainGui():
 				vtypes = self.vTypeToLog,
 				address = self.addressToLog,
 				additionalAddress = self.additional_address,
-				samplingtime = self.ts)
+				samplingtime = self.ts,
+				footer = self.filenameFooter)
 		except:
 			promptStr = ">> %s%s@%s - %s - %s - %d"%(self.instToLog,
 				self.filenameFooter,
@@ -310,7 +311,8 @@ class mainGui():
 				channels = self.chToLog,
 				vtypes = self.vTypeToLog,
 				address = self.addressToLog,
-				samplingtime = self.ts)
+				samplingtime = self.ts,
+				footer = self.filenameFooter)
 
 		self.prompt.showMessage(promptStr)
 
@@ -319,7 +321,13 @@ class mainGui():
 		self.startButton.setEnabled(False)
 		self.stopButton.setEnabled(True)
 		self.address.setEnabled(False)
+		try:
+			self.addAddress.setEnabled(False)
+		except:
+			pass
 		self.samplingtime.setReadOnly(True)
+		self.checkBoxFooter.setEnabled(False)
+		self.footer.setEnabled(False)
 		self.comboInst.setEnabled(False)
 		for i in self.checkBoxChannels:
 			i.setEnabled(False)
@@ -333,7 +341,16 @@ class mainGui():
 		self.startButton.setEnabled(True)
 		self.stopButton.setEnabled(False)
 		self.address.setEnabled(True)
+		try:
+			self.addAddress.setEnabled(True)
+		except:
+			pass
 		self.samplingtime.setReadOnly(False)
+		self.checkBoxFooter.setEnabled(True)
+		if self.checkBoxFooter.isChecked():
+			self.footer.setEnabled(True)
+		else:
+			self.footer.setEnabled(False)
 		self.comboInst.setEnabled(True)
 		for i in range(len(self.checkBoxChannels)):
 			if self.checkBoxChannels[i].isChecked():

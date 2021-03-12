@@ -65,25 +65,29 @@ class KEIT196(abstract_instrument):
 			list_size = len(nb_data_list)
 			for j in range (0, list_size):
 				nb_data = nb_data+nb_data_list[j]
-			return nb_data
+			if type(nb_data) == type(b'0')
+				return nb_data.decode()
+			else:
+				return nb_data
 		except socket.timeout:
 			print("Socket timeout error when reading.")
 			raise
 
 	def disconnect(self):
+		self.send('*RST')
 		self.sock.close()
 
 	def send(self, command):
-		self.sock.send("%s\n"%command)
+		self.sock.send(("%s\n"%command).encode())
 
 	def init_prologix(self):
 		try:
-			self.sock.send("++mode 1\n") # Set mode as CONTROLLER
-			self.sock.send('++addr ' + self.gpib_addr + '\n') # Set the GPIB address
-			self.sock.send('++eos 3\n') # Set end-of-send character to nothing
-			self.sock.send("++eoi 1\n") # Assert EOI with last byte to indicate end
-			self.sock.send("++read_tmo_ms 2750\n") # Set read timeout
-			self.sock.send("++auto 0\n") # Turn off read-after-write to avoid
+			self.sock.send(("++mode 1\n").encode()) # Set mode as CONTROLLER
+			self.sock.send(("++addr %s\n"%self.gpib_addr).encode()) # Set the GPIB address
+			self.sock.send(("++eos 3\n").encode()) # Set end-of-send character to nothing
+			self.sock.send(("++eoi 1\n").encode()) # Assert EOI with last byte to indicate end
+			self.sock.send(("++read_tmo_ms 2750\n").encode()) # Set read timeout
+			self.sock.send(("++auto 0\n").encode()) # Turn off read-after-write to avoid
 
 		except self.socket.timeout:
 			print("Socket timeout")

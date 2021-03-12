@@ -65,7 +65,7 @@ class KEIT196(abstract_instrument):
 			list_size = len(nb_data_list)
 			for j in range (0, list_size):
 				nb_data = nb_data+nb_data_list[j]
-			if type(nb_data) == type(b'0')
+			if type(nb_data) == type(b'0'):
 				return nb_data.decode()
 			else:
 				return nb_data

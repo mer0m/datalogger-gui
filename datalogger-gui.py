@@ -3,8 +3,8 @@
 # -*- coding: utf-8 -*-
 
 import time, os, instruments, inspect, sys, threading
-import PyQt4.QtGui as QtGui
-from PyQt4.QtCore import pyqtSlot
+import PyQt5.QtWidgets as QtWidgets
+from PyQt5.QtCore import pyqtSlot
 
 #==============================================================================
 #==============================================================================
@@ -87,27 +87,27 @@ class mainGui():
 		self.runApp()
 
 	def setWindow(self):
-		self.a = QtGui.QApplication(sys.argv)
-		self.w = QtGui.QMainWindow()
+		self.a = QtWidgets.QApplication(sys.argv)
+		self.w = QtWidgets.QMainWindow()
 		self.w.resize(640, 480)
 		self.w.setWindowTitle('datalogger-gui')
 
-		self.wid = QtGui.QWidget()
+		self.wid = QtWidgets.QWidget()
 		self.w.setCentralWidget(self.wid)
-		self.layout = QtGui.QGridLayout()
+		self.layout = QtWidgets.QGridLayout()
 		self.wid.setLayout(self.layout)
 
-		self.comboInst = QtGui.QComboBox()
+		self.comboInst = QtWidgets.QComboBox()
 		self.comboInst.setToolTip("List of available instruments")
 		self.layout.addWidget(self.comboInst, 0, 0)
 
-		self.address = QtGui.QLineEdit()
+		self.address = QtWidgets.QLineEdit()
 		self.address.setToolTip("IP/USB address")
 		self.address.setMinimumWidth(240)
 		self.address.setMaximumWidth(240)
 		self.layout.addWidget(self.address, 1, 0)
 
-		self.samplingtime = QtGui.QDoubleSpinBox()
+		self.samplingtime = QtWidgets.QDoubleSpinBox()
 		self.samplingtime.setToolTip("Sampling period (s)")
 		self.samplingtime.setMinimumWidth(100)
 		self.samplingtime.setMaximumWidth(100)
@@ -117,28 +117,28 @@ class mainGui():
 		self.samplingtime.setValue(1)
 		self.layout.addWidget(self.samplingtime, 0, 1)
 
-		self.footer = QtGui.QLineEdit()
+		self.footer = QtWidgets.QLineEdit()
 		self.footer.setText("footer")
 		self.footer.setToolTip("Filename footer")
 		self.footer.setMinimumWidth(240)
 		self.footer.setMaximumWidth(240)
 		self.layout.addWidget(self.footer, 2, 0)
 
-		self.checkBoxFooter = QtGui.QCheckBox()
+		self.checkBoxFooter = QtWidgets.QCheckBox()
 		self.checkBoxFooter.setToolTip("Use custom filename footer")
 		self.checkBoxFooter.setText("Footer")
 		self.checkBoxFooter.setChecked(False)
 		self.layout.addWidget(self.checkBoxFooter, 2, 1)
 
-		self.startStopLayout = QtGui.QHBoxLayout()
+		self.startStopLayout = QtWidgets.QHBoxLayout()
 
-		self.startButton = QtGui.QPushButton()
+		self.startButton = QtWidgets.QPushButton()
 		self.startButton.setToolTip("When you're sure of your settings !")
 		self.startButton.setText('Start log')
 		self.startStopLayout.addWidget(self.startButton)
 		self.startButton.setEnabled(False)
 
-		self.stopButton = QtGui.QPushButton()
+		self.stopButton = QtWidgets.QPushButton()
 		self.stopButton.setToolTip("Why ? Too much disturbances ?")
 		self.stopButton.setText('Stop log')
 		self.startStopLayout.addWidget(self.stopButton)
@@ -146,7 +146,7 @@ class mainGui():
 
 		self.layout.addLayout(self.startStopLayout, 0, 2)
 
-		self.prompt = QtGui.QStatusBar()
+		self.prompt = QtWidgets.QStatusBar()
 		self.prompt.setToolTip("Command summary")
 		self.prompt.showMessage('>>')
 		self.w.setStatusBar(self.prompt)
@@ -176,7 +176,7 @@ class mainGui():
 			pass
 		print('Done')
 
-	@pyqtSlot()
+	#@pyqtSlot()
 	def makeCurrentInstrumentGui(self):
 		for i in reversed(list(range(5, self.layout.count()))):
 			try:
@@ -209,7 +209,7 @@ class mainGui():
 		self.address.setText(defaultAddress)
 
 		if additionalAddress != '':
-			self.addAddress = QtGui.QLineEdit()
+			self.addAddress = QtWidgets.QLineEdit()
 			self.addAddress.setToolTip("GPIB address/...")
 			self.addAddress.setMinimumWidth(100)
 			self.addAddress.setMaximumWidth(100)
@@ -227,11 +227,11 @@ class mainGui():
 		self.chListVtypes = [None]*len(self.checkBoxChannels)
 
 		for i in range(len(self.checkBoxChannels)):
-			self.checkBoxChannels[i] = QtGui.QCheckBox()
+			self.checkBoxChannels[i] = QtWidgets.QCheckBox()
 			self.checkBoxChannels[i].setToolTip("Channel %s"%channelsAviables[i])
 			self.checkBoxChannels[i].setText(channelsAviables[i])
 			self.checkBoxChannels[i].setChecked(False)
-			self.chListVtypes[i] = QtGui.QListWidget()
+			self.chListVtypes[i] = QtWidgets.QListWidget()
 			self.chListVtypes[i].setToolTip("Select type of measure")
 			for vtype in vtypesAviables:
 				self.chListVtypes[i].addItem(vtype)
@@ -248,7 +248,7 @@ class mainGui():
 
 		self.setCurrentInstConf()
 
-	@pyqtSlot()
+	#@pyqtSlot()
 	def setCurrentInstConf(self):
 		self.instToLog = self.comboInst.currentText()
 		self.addressToLog = self.address.text()
@@ -316,7 +316,7 @@ class mainGui():
 
 		self.prompt.showMessage(promptStr)
 
-	@pyqtSlot()
+	#@pyqtSlot()
 	def startLog(self):
 		self.startButton.setEnabled(False)
 		self.stopButton.setEnabled(True)
@@ -336,7 +336,7 @@ class mainGui():
 		self.myLog.connect()
 		self.myLog.start()
 
-	@pyqtSlot()
+	#@pyqtSlot()
 	def stopLog(self):
 		self.startButton.setEnabled(True)
 		self.stopButton.setEnabled(False)

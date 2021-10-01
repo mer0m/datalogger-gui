@@ -35,13 +35,13 @@ class KEIT2100(abstract_instrument):
 		self.send('*RST')
 		self.send('*CLS')
 		self.send('CALC:DEM:REF 50')
-		self.send('SAMP:COUT 1')
+		self.send('SAMP:COUN 1') ##COUT
 		for ch in self.channels:
 			self.send(CONF_VAL_TYPE_QUER[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])])
 
 	def getValue(self):
 		self.send('READ?')
-		mesTemp = self.read()
+		mesTemp = self.read().decode()
 		mes = mesTemp.replace('E', 'e').replace('+','') + '\n'
 		return mes
 
@@ -52,4 +52,4 @@ class KEIT2100(abstract_instrument):
 		self.send('*RST')
 
 	def send(self, command):
-		os.write(self.FILE, command)
+		os.write(self.FILE, command.encode())

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-# -*- coding: utf-8 -*-
-
 import time, os, instruments, inspect, sys, threading
 import PyQt5.QtWidgets as QtWidgets
 from PyQt5.QtCore import pyqtSlot
@@ -118,7 +116,7 @@ class mainGui():
 		self.layout.addWidget(self.samplingtime, 0, 1)
 
 		self.footer = QtWidgets.QLineEdit()
-		self.footer.setText("footer")
+		self.footer.setText("Filename footer")
 		self.footer.setToolTip("Filename footer")
 		self.footer.setMinimumWidth(240)
 		self.footer.setMaximumWidth(240)

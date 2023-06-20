@@ -7,11 +7,11 @@ import socket
 
 #==============================================================================
 
-ALL_VAL_TYPE = ['PWR_MKR']
+ALL_VAL_TYPE = ['PWR_MKR', 'FRQ_MKR']
 ALL_CHANNELS = ['1', '2', '3', '4']
 
 ADDRESS = "192.168.0.17"
-CONF_VAL_TYPE = ['CALC:MARKi:Y?']
+CONF_VAL_TYPE = ['CALC:MARKi:Y?', 'CALC:MARKi:X?']
 
 #==============================================================================
 
@@ -43,6 +43,7 @@ class FPC1000(abstract_instrument):
 	def getValue(self):
 		mes = ''
 		for ch in self.channels:
+			#self.send("CALC:MARK1:MAX")
 			self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])].replace('i', str(ch)))
 			mesTemp = self.read()
 			mes = mes + '\t' + mesTemp.replace('\n', '')
@@ -54,7 +55,7 @@ class FPC1000(abstract_instrument):
 		nb_data = ''
 		try:
 			while ans != '\n':
-				ans = self.sock.recv(1)
+				ans = self.sock.recv(1).decode()
 				nb_data_list.append(ans) # Return the number of data
 			list_size = len(nb_data_list)
 			for j in list(range (0, list_size)):
@@ -68,4 +69,4 @@ class FPC1000(abstract_instrument):
 		self.sock.close()
 
 	def send(self, command):
-		self.sock.send("%s\n"%command)
+		self.sock.send(("%s\n"%command).encode())

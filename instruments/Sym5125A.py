@@ -37,7 +37,7 @@ class Sym5125A(abstract_instrument):
 
 	def getValue(self):
 		for i in list(range(1000)):
-			mes = self.tn.read_until('\n').replace('\r\n','')
+			mes = self.tn.read_until('\n'.encode()).replace('\r\n','')
 		return mes + '\n'
 
 	def read(self):

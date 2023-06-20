@@ -3,7 +3,7 @@ if version_info.major == 3:
     from instruments.abstract_instrument import abstract_instrument
 else:
     from abstract_instrument import abstract_instrument
-from labjack import ljm
+from labjack import ljm #The following requires pip3 install labjack-ljm
 import numpy
 
 #==============================================================================

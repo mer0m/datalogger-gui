@@ -4,11 +4,12 @@ if version_info.major == 3:
 else:
     from abstract_instrument import abstract_instrument
 import socket
+import time
 
 #==============================================================================
 
 ALL_VAL_TYPE = ['FREQ']
-ALL_CHANNELS = ['1']
+ALL_CHANNELS = ['1', '2', '3']
 
 ADDRESS = "192.168.0.74"
 CONF_VAL_TYPE = ['CONF:FREQ']
@@ -40,23 +41,24 @@ class AG53230A(abstract_instrument):
 	def configure(self):
 		self.send('*RST')
 		self.send('DISP:DIG:MASK:AUTO OFF')
-		self.send('INP1:IMP 50')
-		self.send('INP1:COUP AC')
+		self.send('INP%s:IMP 50' %(self.channels[0]))
+		self.send('INP%s:COUP AC' %(self.channels[0]))
 		self.send('SYST:TIM INF')
 		self.send('SENS:ROSC:SOUR EXT')
 		self.send('SENS:ROSC:EXT:FREQ 10E6')
 		for ch in self.channels:
-			self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])])
-		self.send('SAMP:COUN 1E6')
+			self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])] + ' (@%s)' %(self.channels[0]))
+		self.send('SAMP:COUN 1e6')
 		self.send('SENS:FREQ:MODE CONT')
 		self.send('SENS:FREQ:GATE:SOUR TIME')
-		self.send('1')
+		self.send('SENS:FREQ:GATE:TIME 1')
 		self.send('TRIG:SOUR IMM')
+		self.send('INIT:IMM')
 
 	def getValue(self):
 		mes = ''
 		for ch in self.channels:
-			self.send("DATA:REM?")
+			self.send('DATA:REM? 1, WAIT')
 			mesTemp = self.read()
 			mes = mes + '\t' + mesTemp
 		return mes
@@ -67,7 +69,7 @@ class AG53230A(abstract_instrument):
 		nb_data = ''
 		try:
 			while ans != '\n':
-				ans = self.sock.recv(1)
+				ans = self.sock.recv(1).decode()
 				nb_data_list.append(ans) # Return the number of data
 			list_size = len(nb_data_list)
 			for j in list(range(0, list_size)):
@@ -83,4 +85,4 @@ class AG53230A(abstract_instrument):
 		self.sock.close()
 
 	def send(self, command):
-		self.sock.send("%s\n"%command)
+		self.sock.send(("%s\n"%command).encode())

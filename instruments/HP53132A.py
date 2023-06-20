@@ -8,7 +8,7 @@ import socket
 #==============================================================================
 
 ALL_VAL_TYPE = ['FREQ']  #, 'PERIOD']
-ALL_CHANNELS = ['1'] #, '2']
+ALL_CHANNELS = ['1', '2', '3']
 
 ADDRESS = "192.168.0.52"
 ADDITIONAL_ADDRESS = "12"
@@ -43,7 +43,7 @@ class HP53132A(abstract_instrument):
 		self.send('*RST')
 
 		self.send(':INP:IMP 50')
-		self.send(':FUNC "FREQ 1"')
+		self.send(':FUNC "FREQ %s"' %(self.channels[0]))
 		self.send(':FREQ:ARM:STAR:SOUR IMM')
 		self.send(':FREQ:ARM:STOP:SOUR TIM')
 		self.send(':FREQ:ARM:STOP:TIM 1')
@@ -62,7 +62,7 @@ class HP53132A(abstract_instrument):
 		nb_data = ''
 		try:
 			while ans != '\n':
-				ans = self.sock.recv(1)
+				ans = self.sock.recv(1).decode()
 				nb_data_list.append(ans) # Return the number of data
 			list_size = len(nb_data_list)
 			for j in range (0, list_size):

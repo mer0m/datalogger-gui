@@ -40,10 +40,10 @@ class PM100D(abstract_instrument):
 		return self.read()
 
 	def read(self):
-		return os.read(self.FILE, 300)
+		return os.read(self.FILE, 300).decode()
 
 	def disconnect(self):
 		self.send('*RST')
 
 	def send(self, command):
-		os.write(self.FILE, command)
+		os.write(self.FILE, command.encode())

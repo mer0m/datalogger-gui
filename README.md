@@ -13,4 +13,3 @@ datalogger-gui is used to monitor different kind of devices with a common interf
 	- load saved config
 - CLI mode based on saved config
 - be able to log different devices and save values on one file
-- move to pyqt5

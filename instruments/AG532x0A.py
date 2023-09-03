@@ -16,7 +16,7 @@ CONF_VAL_TYPE = ['CONF:FREQ']
 
 #==============================================================================
 
-class AG53230A(abstract_instrument):
+class AG532x0A(abstract_instrument):
 	def __init__(self, channels, vtypes, address):
 		self.address = address
 		self.port = 5025
@@ -24,7 +24,7 @@ class AG53230A(abstract_instrument):
 		self.vtypes = vtypes
 
 	def model(self):
-		return "AG53230A"
+		return "AG532x0A"
 
 	def connect(self):
 		print('Connecting to device @%s:%s...' %(self.address, self.port))

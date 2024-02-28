@@ -8,11 +8,11 @@ import time
 
 #==============================================================================
 
-ALL_VAL_TYPE = ['FREQ']
+ALL_VAL_TYPE = ['FREQ - Int. Ref.', 'FREQ - Ext. Ref.']
 ALL_CHANNELS = ['1', '2', '3']
 
 ADDRESS = "192.168.0.74"
-CONF_VAL_TYPE = ['CONF:FREQ']
+CONF_VAL_TYPE = [['CONF:FREQ', 'SENS:ROSC:SOUR INT'], ['CONF:FREQ', 'SENS:ROSC:SOUR EXT']]
 
 #==============================================================================
 
@@ -43,11 +43,11 @@ class AG532x0A(abstract_instrument):
 		self.send('DISP:DIG:MASK:AUTO OFF')
 		self.send('INP%s:IMP 50' %(self.channels[0]))
 		self.send('INP%s:COUP AC' %(self.channels[0]))
+		#self.send('INP%s:PROB 10' %(self.channels[0]))
 		self.send('SYST:TIM INF')
-		self.send('SENS:ROSC:SOUR EXT')
-		self.send('SENS:ROSC:EXT:FREQ 10E6')
 		for ch in self.channels:
-			self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])] + ' (@%s)' %(self.channels[0]))
+			self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])][1])
+			self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])][0] + ' (@%s)' %(self.channels[0]))
 		self.send('SAMP:COUN 1e6')
 		self.send('SENS:FREQ:MODE CONT')
 		self.send('SENS:FREQ:GATE:SOUR TIME')

@@ -40,11 +40,7 @@ class HMP4040(abstract_instrument):
 		self.configure()
 
 	def configure(self):
-		self.send("*RST")
-		for ch in self.channels:
-			for command in CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])]:
-				self.send(command.replace('i', str(ch)))
-		self.send("OUTP:GEN ON")
+		pass
 
 	def getValue(self):
 		mes = ''
@@ -73,10 +69,7 @@ class HMP4040(abstract_instrument):
 			raise
 
 	def disconnect(self):
-		#self.send("*RST")
-		self.send("OUTP:GEN OFF")
 		self.sock.close()
 
 	def send(self, command):
-		#print(command)
 		self.sock.send(("%s\n"%command).encode())

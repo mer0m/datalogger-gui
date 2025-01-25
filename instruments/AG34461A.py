@@ -55,7 +55,7 @@ class AG34461A(abstract_instrument):
 		nb_data = ''
 		try:
 			while ans != '\n':
-				ans = self.sock.recv(1)
+				ans = self.sock.recv(1).decode()
 				nb_data_list.append(ans) # Return the number of data
 			list_size = len(nb_data_list)
 			for j in list(range(0, list_size)):
@@ -71,4 +71,4 @@ class AG34461A(abstract_instrument):
 		self.sock.close()
 
 	def send(self, command):
-		self.sock.send("%s\n"%command)
+		self.sock.send(("%s\n"%command).encode())

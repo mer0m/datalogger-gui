@@ -7,11 +7,11 @@ import socket
 
 #==============================================================================
 
-ALL_VAL_TYPE = ['DCV', 'ACV', 'DCI', 'ACI', 'RES2W', 'RES4W', 'FREQ']
+ALL_VAL_TYPE = ['DCV', 'ACV', 'DCI', 'ACI', 'RES2W', 'RES4W', 'FREQ', 'TEMP']
 ALL_CHANNELS = ['1']
 
 ADDRESS = "192.168.0.61"
-CONF_VAL_TYPE = ['CONF:VOLT:DC', 'CONF:VOLT:AC', 'CONF:CURR:DC', 'CONF:CURR:AC', 'CONF:RES', 'CONF:FRES', 'CONF:FREQ']
+CONF_VAL_TYPE = ['CONF:VOLT:DC', 'CONF:VOLT:AC', 'CONF:CURR:DC', 'CONF:CURR:AC', 'CONF:RES', 'CONF:FRES', 'CONF:FREQ', 'CONF:TEMP FRTD,85']
 
 #==============================================================================
 

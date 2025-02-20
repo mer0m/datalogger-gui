@@ -10,13 +10,16 @@ from PyQt5.QtCore import pyqtSlot
 class acq_routine():
 	def __init__(self, instrument, channels, vtypes, address, additionalAddress = "", samplingtime = 1, path = os.getcwd(), fileduration = 24*3600, footer = ""):
 		try:
-			exec('self.instrument = instruments.%s.%s(%s, %s, "%s", "%s")'%(instrument, instrument, channels, vtypes, address, additionalAddress))
-		except:
-			exec('self.instrument = instruments.%s.%s(%s, %s, "%s")'%(instrument, instrument, channels, vtypes, address))
-		self.path = path
-		self.samplingtime = samplingtime
-		self.fileduration = fileduration
-		self.footer = footer
+			try:
+				exec('self.instrument = instruments.%s.%s(%s, %s, "%s", "%s")'%(instrument, instrument, channels, vtypes, address, additionalAddress))
+			except:
+				exec('self.instrument = instruments.%s.%s(%s, %s, "%s")'%(instrument, instrument, channels, vtypes, address))
+			self.path = path
+			self.samplingtime = samplingtime
+			self.fileduration = fileduration
+			self.footer = footer
+		except Exception as e:
+			print(e)
 
 	def makeTree(self):
 		try:
@@ -285,80 +288,90 @@ class mainGui():
 			self.startButton.setEnabled(True)
 
 		try:
-			promptStr = ">> %s%s@%s:%s - %s - %s - %d"%(self.instToLog,
-				self.filenameFooter,
-				self.addressToLog,
-				self.additional_address,
-				self.chToLog,
-				self.vTypeToLog,
-				self.ts)
-			self.myLog = acq_routine(instrument = self.instToLog,
-				channels = self.chToLog,
-				vtypes = self.vTypeToLog,
-				address = self.addressToLog,
-				additionalAddress = self.additional_address,
-				samplingtime = self.ts,
-				footer = self.filenameFooter)
-		except:
-			promptStr = ">> %s%s@%s - %s - %s - %d"%(self.instToLog,
-				self.filenameFooter,
-				self.addressToLog,
-				self.chToLog,
-				self.vTypeToLog,
-				self.ts)
-			self.myLog = acq_routine(instrument = self.instToLog,
-				channels = self.chToLog,
-				vtypes = self.vTypeToLog,
-				address = self.addressToLog,
-				samplingtime = self.ts,
-				footer = self.filenameFooter)
+			try:
+				promptStr = ">> %s%s@%s:%s - %s - %s - %d"%(self.instToLog,
+					self.filenameFooter,
+					self.addressToLog,
+					self.additional_address,
+					self.chToLog,
+					self.vTypeToLog,
+					self.ts)
+				self.myLog = acq_routine(instrument = self.instToLog,
+					channels = self.chToLog,
+					vtypes = self.vTypeToLog,
+					address = self.addressToLog,
+					additionalAddress = self.additional_address,
+					samplingtime = self.ts,
+					footer = self.filenameFooter)
+			except:
+				promptStr = ">> %s%s@%s - %s - %s - %d"%(self.instToLog,
+					self.filenameFooter,
+					self.addressToLog,
+					self.chToLog,
+					self.vTypeToLog,
+					self.ts)
+				self.myLog = acq_routine(instrument = self.instToLog,
+					channels = self.chToLog,
+					vtypes = self.vTypeToLog,
+					address = self.addressToLog,
+					samplingtime = self.ts,
+					footer = self.filenameFooter)
 
-		self.prompt.showMessage(promptStr)
+			self.prompt.showMessage(promptStr)
+		except Exception as e:
+			print(e)
 
 	#@pyqtSlot()
 	def startLog(self):
-		self.startButton.setEnabled(False)
-		self.stopButton.setEnabled(True)
-		self.address.setEnabled(False)
 		try:
-			self.addAddress.setEnabled(False)
-		except:
-			pass
-		self.samplingtime.setReadOnly(True)
-		self.checkBoxFooter.setEnabled(False)
-		self.footer.setEnabled(False)
-		self.comboInst.setEnabled(False)
-		for i in self.checkBoxChannels:
-			i.setEnabled(False)
-		for i in self.chListVtypes:
-			i.setEnabled(False)
-		self.myLog.connect()
-		self.myLog.start()
+			self.startButton.setEnabled(False)
+			self.stopButton.setEnabled(True)
+			self.address.setEnabled(False)
+			try:
+				self.addAddress.setEnabled(False)
+			except:
+				pass
+			self.samplingtime.setReadOnly(True)
+			self.checkBoxFooter.setEnabled(False)
+			self.footer.setEnabled(False)
+			self.comboInst.setEnabled(False)
+			for i in self.checkBoxChannels:
+				i.setEnabled(False)
+			for i in self.chListVtypes:
+				i.setEnabled(False)
+			self.myLog.connect()
+			self.myLog.start()
+		except Exception as e:
+			print(e)
+			self.stopLog()
 
 	#@pyqtSlot()
 	def stopLog(self):
-		self.startButton.setEnabled(True)
-		self.stopButton.setEnabled(False)
-		self.address.setEnabled(True)
 		try:
-			self.addAddress.setEnabled(True)
-		except:
-			pass
-		self.samplingtime.setReadOnly(False)
-		self.checkBoxFooter.setEnabled(True)
-		if self.checkBoxFooter.isChecked():
-			self.footer.setEnabled(True)
-		else:
-			self.footer.setEnabled(False)
-		self.comboInst.setEnabled(True)
-		for i in range(len(self.checkBoxChannels)):
-			if self.checkBoxChannels[i].isChecked():
-				self.checkBoxChannels[i].setEnabled(True)
-				self.chListVtypes[i].setEnabled(True)
+			self.startButton.setEnabled(True)
+			self.stopButton.setEnabled(False)
+			self.address.setEnabled(True)
+			try:
+				self.addAddress.setEnabled(True)
+			except:
+				pass
+			self.samplingtime.setReadOnly(False)
+			self.checkBoxFooter.setEnabled(True)
+			if self.checkBoxFooter.isChecked():
+				self.footer.setEnabled(True)
 			else:
-				self.checkBoxChannels[i].setEnabled(True)
-				self.chListVtypes[i].setEnabled(False)
-		self.myLog.stop()
+				self.footer.setEnabled(False)
+			self.comboInst.setEnabled(True)
+			for i in range(len(self.checkBoxChannels)):
+				if self.checkBoxChannels[i].isChecked():
+					self.checkBoxChannels[i].setEnabled(True)
+					self.chListVtypes[i].setEnabled(True)
+				else:
+					self.checkBoxChannels[i].setEnabled(True)
+					self.chListVtypes[i].setEnabled(False)
+			self.myLog.stop()
+		except Exception as e:
+			print(e)
 
 #==============================================================================
 #==============================================================================

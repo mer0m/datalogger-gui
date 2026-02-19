@@ -8,11 +8,11 @@ import time
 
 #==============================================================================
 
-ALL_VAL_TYPE = ['FREQ - Int. Ref.', 'FREQ - Ext. Ref.']
+ALL_VAL_TYPE = ['FREQ - Int. Ref.', 'FREQ - Ext. Ref.', 'TIE 1>2 - Int. Ref.', 'TIE 1>2 - Ext. Ref.']
 ALL_CHANNELS = ['1', '2', '3']
 
 ADDRESS = "192.168.0.74"
-CONF_VAL_TYPE = [['CONF:FREQ', 'SENS:ROSC:SOUR INT'], ['CONF:FREQ', 'SENS:ROSC:SOUR EXT']]
+CONF_VAL_TYPE = [['CONF:FREQ', 'SENS:ROSC:SOUR INT'], ['CONF:FREQ', 'SENS:ROSC:SOUR EXT'], ['CONF:TINT', 'SENS:ROSC:SOUR INT'], ['CONF:TINT', 'SENS:ROSC:SOUR EXT']]
 
 #==============================================================================
 
@@ -41,19 +41,36 @@ class AG532x0A(abstract_instrument):
 	def configure(self):
 		self.send('*RST')
 		self.send('DISP:DIG:MASK:AUTO OFF')
-		self.send('INP%s:IMP 50' %(self.channels[0]))
-		self.send('INP%s:COUP AC' %(self.channels[0]))
-		#self.send('INP%s:PROB 10' %(self.channels[0]))
-		self.send('SYST:TIM INF')
 		for ch in self.channels:
-			self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])][1])
-			self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])][0] + ' (@%s)' %(self.channels[0]))
-		self.send('SAMP:COUN 1e6')
-		self.send('SENS:FREQ:MODE CONT')
-		self.send('SENS:FREQ:GATE:SOUR TIME')
-		self.send('SENS:FREQ:GATE:TIME 1')
-		self.send('TRIG:SOUR IMM')
-		self.send('INIT:IMM')
+			match CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])][0]:
+				case 'CONF:FREQ':
+					self.send('INP%s:IMP 50' %(self.channels[0]))
+					self.send('INP%s:COUP AC' %(self.channels[0]))
+					self.send('SYST:TIM INF')
+					for ch in self.channels:
+						self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])][1])
+						self.send(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])][0] + ' (@%s)' %(self.channels[0]))
+					self.send('SAMP:COUN 1e6')
+					self.send('SENS:FREQ:MODE CONT')
+					self.send('SENS:FREQ:GATE:SOUR TIME')
+					self.send('SENS:FREQ:GATE:TIME 1')
+					self.send('TRIG:SOUR IMM')
+					self.send('INIT:IMM')
+				case 'CONF:TINT':
+					self.send('INP1:IMP 1.0E6')
+					self.send('INP1:COUP DC')
+					self.send('INP2:IMP 1.0E6')
+					self.send('INP2:COUP DC')
+					self.send('CONF:TINT (@1),(@2)')
+					self.send('INP1:LEV 1.65')
+					self.send('INP2:LEV 1.65')
+					self.send('SAMP:COUN 1e6')
+					self.send('SENS:TINT:GATE:SOUR IMM')
+					self.send('TRIG:SOUR IMM')
+					self.send('INIT:IMM')
+				case _:
+					print('...')
+					print(CONF_VAL_TYPE[ALL_VAL_TYPE.index(self.vtypes[self.channels.index(ch)])][0])
 
 	def getValue(self):
 		mes = ''

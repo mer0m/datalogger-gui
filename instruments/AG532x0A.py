@@ -58,9 +58,13 @@ class AG532x0A(abstract_instrument):
 					self.send('INIT:IMM')
 				case 'CONF:TINT':
 					self.send('INP1:IMP 1.0E6')
+					self.send('INP1:PROB 10')
 					self.send('INP1:COUP DC')
+					self.send('INP1:RANG 50')
 					self.send('INP2:IMP 1.0E6')
+					self.send('INP2:PROB 10')
 					self.send('INP2:COUP DC')
+					self.send('INP2:RANG 50')
 					self.send('CONF:TINT (@1),(@2)')
 					self.send('INP1:LEV 1.65')
 					self.send('INP2:LEV 1.65')

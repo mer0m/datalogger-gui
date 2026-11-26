@@ -66,6 +66,8 @@ class AG532x0A(abstract_instrument):
 					self.send('INP2:COUP DC')
 					self.send('INP2:RANG 50')
 					self.send('CONF:TINT (@1),(@2)')
+					self.send('INP1:SLOP POS')
+					self.send('INP2:SLOP POS')
 					self.send('INP1:LEV 1.65')
 					self.send('INP2:LEV 1.65')
 					self.send('SAMP:COUN 1e6')
